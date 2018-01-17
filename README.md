@@ -43,6 +43,6 @@ Standard GitHub workflow:
 
 * Fork the repository on GitHub
 * Clone your fork to your local computer
-* Work in your local repo in the "OSL\User Submitted" folder, and push changes to a branch on your forked repository
+* Work in your local repo in the "OSL\ADN-User Submitted" folder, and push changes to a branch on your forked repository
 * When ready, submit a pull request
 * ADN-DevTech will check out your submission and merge it into this repository
