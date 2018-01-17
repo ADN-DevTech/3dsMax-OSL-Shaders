@@ -11,23 +11,32 @@ The intent of this folder is that it should be safe to replace your 3dsmax\OSL
 folder with the content from here. It should only contain safe (compatible)
 updates to the shaders shipping together with max.
 
-Non-shipping are under the OSL directory, with a few main subfolders:
+### Non-shipping shaders
 
-### OSL\ADN-Experimental
+Non-shipping are under the OSL directory, with a few sub-folders. They are all
+under a main "OSL" folder. This allows you to add the folder checked out from
+GitHub as a plugin folder.
+
+Go to *Customize* -> *Configure System Paths* -> *3rd Party Plug-Ins* and add 
+the checked out folder as a plugin path. 3ds Max will find the "OSL" subdirectory
+and automatically load everything in it at startup, and populate the material 
+browser.
+
+#### OSL\ADN-Experimental
 
 Contains shaders in flux and in development that may change completely tomorrow. 
 Use these with caution, and its probably safest to use them in unlinked mode, because
 if you download a new version in the future, the behavior may have changed enough such
 that your old scenes no longer work.
 
-### OSL\ADN-Stable
+#### OSL\ADN-Stable
 
 These are shaders that are mature anough and stable enough that the intent is that
 the shaders interface and behaviour won't substantially change in the future. It may
 gain parameters, but defaults should be compatible with the previous version. These 
 shaders are candidates to be included in the shipping set in the next version.
 
-### OSL\ADN-User Submitted
+#### OSL\ADN-User Submitted
 
 These are shaders submitted by users. Please only upload shaders you've written yourself
 or where you can be certain the license is explicitly permissive. This is a sharing site
