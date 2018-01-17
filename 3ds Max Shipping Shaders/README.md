@@ -1,4 +1,4 @@
-### Shipping
+### 3ds Max Shipping
 
 The shaders shipping with the current version of max, and updates to them. 
 The intent of this folder is that it should be safe to replace your 3dsmax\OSL 
