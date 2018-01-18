@@ -1,0 +1,18 @@
+// Converts vector spaces
+// ConstantBiasScale.osl, by Mads Drøschler
+// Modified: 2018-01-17
+// Licence: cc-by-sa
+
+shader ConstantBiasSCale
+[[ string help="Constant Bias Scale, useful for converting and aligning vector spaces",
+   string label    = "ConstantBiasScale (vector)",
+   string category = "Math\Vector" ]]
+(
+	vector in = 0.5,
+	float bias = 0.5,
+	float scale = 2.0,
+	output vector Out = 0.0,
+)
+{
+	Out = (in+bias)*scale;
+}
