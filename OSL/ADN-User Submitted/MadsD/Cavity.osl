@@ -1,0 +1,71 @@
+// Cavity map
+// Cavity.osl, by Mads Drøschler
+// Modified: 2018-01-23
+// Licence: cc-by-sa
+
+// The cavity map needs UV cooridinates and either a file or scene data normals ( Haven't tested scene data normal yet )
+
+
+shader Cavity [[ string help="Cavity map from normals" ]]
+(  
+	// UV In
+	vector UVSet = 1
+	[[ string help = "Get an UVW coodinate from a 3ds max map channel",
+   string label = "UVW Channel" ]],
+    
+    // File In
+    string Filename = "uv-grid.png"[[ string widget="filename",string label="File name",string help="The name of the texture to look up" ]], 
+    
+    // Output
+    output vector Out  = 0,
+)
+{
+	// Derivatives
+	vector DerA = vector (0.000977 , 0.0		 , 0.0);
+	vector DerB = vector (0.0	   , 0.000977    , 0.0);
+	
+	// Add Derivatives and UV
+	vector VecADD  = UVSet + DerA; 
+	vector VecADD2 = UVSet + DerB;
+	
+	// Subtract Derivatives from UV
+	vector  VecSUB = UVSet - DerA;
+	vector VecSUB2 = UVSet - DerB;
+
+	// 4 channels
+	string WrapMode = "periodic";
+	float A = 1;
+	color Col_1 = 0;color Col_2 = 0;color Col_3 = 0;color Col_4 = 0;
+	Col_1  = texture(Filename, VecADD[0] , 1.0-VecADD[1] , "wrap", WrapMode, "alpha", A, "interp", "linear");
+	Col_2  = texture(Filename, VecADD2[0], 1.0-VecADD2[1], "wrap", WrapMode, "alpha", A, "interp", "linear");
+	Col_3  = texture(Filename, VecSUB[0] , 1.0-VecSUB[1] , "wrap", WrapMode, "alpha", A, "interp", "linear");
+    Col_4  = texture(Filename, VecSUB2[0], 1.0-VecSUB2[1], "wrap", WrapMode, "alpha", A, "interp", "linear");
+	
+	// Gamma
+	int    AutoGamma   = 1;
+	if (AutoGamma)
+	{
+		if (!endswith(Filename, ".exr") &&
+			!endswith(Filename, ".EXR") &&
+			!endswith(Filename, ".hdr") &&
+			!endswith(Filename, ".HDR") &&
+			!endswith(Filename, ".tx")  &&
+			!endswith(Filename, ".TX"))
+		{
+			Col_1 = pow(Col_1, 2.2);Col_2 = pow(Col_2, 2.2);Col_3 = pow(Col_3, 2.2);Col_4 = pow(Col_4, 2.2);	
+		}
+	}
+	vector Channel1_R = Col_1[0];
+    vector Channel2_G = Col_2[1];
+    vector Channel3_R = Col_3[0];
+    vector Channel4_G = Col_4[1];
+    
+    // Post process
+    vector SubA = ((Channel1_R - Channel3_R)+1)*0.5;
+    vector SubB = ((Channel2_G - Channel4_G)+1)*0.5;
+    vector Cavity = SubA*SubB;
+   	
+   	// Output
+   	Out = Cavity;
+	
+}
