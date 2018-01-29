@@ -1,7 +1,7 @@
-// Converts vector spaces
+﻿// Converts vector spaces
 // ConstantBiasScale.osl, by Mads Drøschler
 // Modified: 2018-01-17
-// Licence: cc-by-sa
+// License: MIT License, https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
 shader ConstantBiasSCale
 [[ string help="Constant Bias Scale, useful for converting and aligning vector spaces",

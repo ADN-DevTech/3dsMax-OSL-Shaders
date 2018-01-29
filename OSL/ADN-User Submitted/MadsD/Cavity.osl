@@ -1,7 +1,7 @@
-// Cavity map
+﻿// Cavity map
 // Cavity.osl, by Mads Drøschler
 // Modified: 2018-01-23
-// Licence: cc-by-sa
+// License: MIT License, https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
 // The cavity map needs UV cooridinates and either a file or scene data normals ( Haven't tested scene data normal yet )
 
