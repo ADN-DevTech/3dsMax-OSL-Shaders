@@ -1,6 +1,9 @@
 # 3dsMax-OSL-Shaders
 
-This will be the repo to hold shared OSL shaders for 3ds Max. Note that 3ds Max neptune (currently in beta only) is the only version to support this standard.
+This will be the repo to hold shared OSL shaders for 3ds Max. 
+Note that 3ds Max neptune (currently in beta only) is the only version to support this standard.
+
+All shaders in this repository are under the MIT License - see [LICENCE.TXT](LICENCE.TXT)
 
 ## Layout of the repository
 
@@ -41,6 +44,10 @@ shaders are candidates to be included in the shipping set in the next version.
 These are shaders submitted by users. Please only upload shaders you've written yourself
 or where you can be certain the license is explicitly permissive. This is a sharing site
 and OSL files will be flying left and right.
+
+If not there, add to the header of your file that it is under the MIT license by adding this line
+
+    // License: MIT License, https://raw.githubusercontent.com/ADN-DevTech/3dsMax-OSL-Shaders/master/LICENSE.txt
 
 Each user builds their own subdirectory under this to place their shaders. Some may later
 be promoted to other folders.
