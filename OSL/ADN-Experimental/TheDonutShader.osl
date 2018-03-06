@@ -1,4 +1,7 @@
-/* The DONUT SHADER */
+/* The DONUT SHADER, by Uncle Bob */
+// (This is actually a metadata sample by Zap. There is no Uncle Bob. Or is there?)
+// License: Apache 2.0 License
+//   https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
 shader DonutShader
 [[ string label="The Donut Shader",
