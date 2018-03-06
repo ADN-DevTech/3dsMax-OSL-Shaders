@@ -25,8 +25,8 @@ this line or something equivalent:
 First, each person wanting to contribute to this repo must you first sign a Contributor Licence Agreement,
 scan it and email to us. This is a one-time thing per person, and exists for both your and our protection.
 
-For individuals: [3dsMax OSL Shaders - Ind Contrib Agmt.pdf](3dsMax OSL Shaders - Ind Contrib Agmt.pdf)
-For corporations: [3dsMax OSL Shaders - Corp Contrib Agmt.pdf](3dsMax OSL Shaders - Ind Contrib Agmt.pdf)
+* For individuals: [3dsMax OSL Shaders - Ind Contrib Agmt.pdf](3dsMax%20OSL%20Shaders%20-%20Ind%20Contrib%20Agmt.pdf)
+* For corporations: [3dsMax OSL Shaders - Corp Contrib Agmt.pdf](3dsMax%20OSL%20Shaders%20-%20Ind%20Contrib%20Agmt.pdf)
 
 Once that is done, simply follow a standard GitHub workflow: 
 
