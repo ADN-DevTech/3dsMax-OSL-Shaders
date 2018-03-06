@@ -16,4 +16,4 @@ shaders are candidates to be included in the shipping set in the next version.
 
 These are shaders submitted by users. 
 
-If you want to contribute, read the [how to submit]{../HOW-TO-SUBMIT.md} documentation for details.
+If you want to contribute, read the [how to submit](../HOW-TO-SUBMIT.md) documentation for details.
