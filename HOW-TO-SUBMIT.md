@@ -40,3 +40,14 @@ Once that is done, simply follow a standard GitHub workflow:
 * ADN-DevTech will check out your submission and merge it into this repository
 * For questions, email 3dsMaxOSLShaders@Autodesk.com
 
+### Best Practices
+
+We suggest that if your shader may need documentation or a "demo", to add files with the same basic filename as your shader that describes it. For example something like this:
+
+	WooHoo.osl                          The shader itself
+	WooHoo.jpg                          Example rendering, or screenshot containing example rendering and setup
+	WooHoo_Setup.jpg                    Screenshot from SME showing an intended use case 
+
+One could also consider having PDF or TXT files with written documentation, and if necessary, a scene. However the ideal is that the shader is self-documenting enough with metadata and tooltips so this won't be necessary. But an example image showing what the shader does is always welcome!
+
+	
