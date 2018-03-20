@@ -1,0 +1,17 @@
+// Pass-through shader for debugging, instancing etc.
+// SetInt.osl, by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader SetInt
+[[ string help = "Just gives an integer  value.",
+   string label= "Integer",
+   string category = "Values" ]]
+(
+	int        In  = 0 [[ string label = "Integer" ]],
+	output int Out = 0
+)
+{
+	Out = In; // Does nothing
+}

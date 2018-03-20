@@ -1,0 +1,49 @@
+// Pass-through shader for debugging, instancing etc.
+// SetFile.osl, by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader SetFile
+[[ string help  = "Just gives a file name.",
+   string label = "File Name",
+   string category = "Values" ]]
+(
+	string  In  = "uv-grid.png" [[ string widget="filename", string label = "File Name" ]],
+	int     DoPreview = 1
+		[[ string label = "Show Preview",
+		   string help  = "Will output the image on the 'Preview' output",
+		   string widget= "checkBox" ]],	
+	output color  Preview = 0.25,
+	output string FileName = "" [[ string label = "File Name" ]]
+)
+{
+	FileName = In; // Does nothing
+	
+	if (DoPreview)
+	{
+		int res[2];
+		if (gettextureinfo(FileName, "resolution", res))
+		{
+			float x = u, y = v;
+			
+			if (res[0] > res[1])
+			{
+				y = ((y - 0.5) * float(res[0]) / float(res[1])) + 0.5;
+			}
+			else
+			{
+				x = ((x - 0.5) * float(res[1]) / float(res[0])) + 0.5;
+			}
+				
+			Preview = texture(FileName, x, 1-y);	
+	
+			if (!endswith(FileName, ".exr") && !endswith(FileName,".EXR")  &&
+		    	!endswith(FileName, ".hdr") && !endswith(FileName,".HDR")  &&
+		    	!endswith(FileName, ".tx")  && !endswith(FileName,".TX"))
+		    {
+		    	Preview = pow(Preview, 2.2);
+	    	}	
+	    }	
+	}	
+}

@@ -1,0 +1,71 @@
+// Construct a numbered filename
+// SetFilename.osl, by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader SetNumFile
+[[ string help  = "Append a 4-digit number to a file name (for image sequences)",
+   string label = "Numbered File Name",
+   string category = "Values" ]]
+(
+	string  In = "uv-grid.png" [[ string widget="filename", string label = "File Name" ]],
+	int     Number = 0
+		[[ string label = "Frame Number",
+		   string help = "The number to insert at the end of the filename" ]],
+	int     FrameCount = 0
+		[[ string label = "Frame Count",
+		   string help = "If nonzero, will loop after this many frames." ]],		
+	string	Extension = ".png"
+		[[ string help = "The file extension to use" ]],	
+	int     Replace = 0 
+		[[ string widget="checkBox", 
+		   string help="If off, inserts the number in front of the extension. If ON, overwrites the N digits in front of the extension with the number (assuming some dummy number was already there, like 0000)"]]	,
+	int     DoPreview = 0
+		[[ string label = "Show Preview",
+		   string help  = "Will output the image on the 'Preview' output",
+		   string widget= "checkBox" ]],
+	output color  Preview = 0.25,
+	output string FileName = "" [[ string label = "File Name" ]]
+)
+{
+	int frame = Number;
+	// Apply modulo on frame count
+	if (FrameCount)
+		frame = frame % FrameCount;
+		
+	// Constant folding should make this a non-issue, performance wise.
+	// It should never happen at render time.
+	string numberString = format("%04d", frame);
+	string left = substr(In, 0, strlen(In) - strlen(Extension) - Replace*4);
+	string ext  = substr(In, strlen(In) - strlen(Extension));
+
+	FileName = concat(left, numberString, ext);
+	
+	if (DoPreview)
+	{
+		int res[2];
+		if (gettextureinfo(FileName, "resolution", res))
+		{
+			float x = u, y = v;
+			
+			if (res[0] > res[1])
+			{
+				y = ((y - 0.5) * float(res[0]) / float(res[1])) + 0.5;
+			}
+			else
+			{
+				x = ((x - 0.5) * float(res[1]) / float(res[0])) + 0.5;
+			}
+				
+			Preview = texture(FileName, x, 1-y);	
+	
+			if (ext != ".exr"  && ext != ".EXR"  &&
+			    ext != ".hdr"  && ext != ".HDR " &&	
+		    	ext != ".tx"   && ext != ".TX")
+		    {
+		    	Preview = pow(Preview, 2.2);
+	    	}	
+	    }
+	}
+}

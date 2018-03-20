@@ -1,0 +1,18 @@
+// Shader to get the Node Name (or its hash)
+// GetNodeName.osl, by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader GetNodeName
+[[ string help = "Get the Node Name, or (perhaps more useful)<br>its hash for use in randomization of things",
+   string label = "Node Name/Hash",
+   string category = "Scene" ]]
+(
+	output int    Hash = 0,
+	output string Name = ""
+)
+{
+	getattribute("nodeName", Name);	
+	Hash = hash(Name);
+}
