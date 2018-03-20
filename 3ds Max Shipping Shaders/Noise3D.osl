@@ -1,0 +1,82 @@
+// General Noise Shader
+// Noise3D.osl by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader Noise3D
+[[ string help  = "A shader for generating more advanced noise in 3D<br/>(for color, vector or individual component output)",
+   string label = "Noise (3D)" ]]
+(
+	point  UVW    = transform("object", P)
+		[[ string help = "The UVW coordinate to use. When not connected, defaults to Object space" ]],	
+	float  Scale  = 25.0,
+	string Type   = "uperlin"
+		[[ string widget= "popup", 
+		   string help  = "Use perlin, uperlin, cell, hash, simplex or gabor",
+		   string options="perlin|uperlin|cell|hash|simplex|gabor" ]],
+	int   Octaves    = 4
+		[[ string help = "Hos many layers of noise are mixed together" ]],
+	float Lacunarity = 2.0
+		[[ string help = "How much the 'frequency' of the noise changes per layer" ]],	
+	float Gain       = 0.5
+		[[ string help = "How much the amplitude of the noise changes per layer. Higher numbers means higher noise frequencies have more effect." ]],		
+	
+	int   StepFunction = 1 
+		[[ string widget= "checkBox",
+		   string label = "Step Function",
+		   string help  = "Enables a per-layer smoothstep curve in the noise, allowing you to increase the 'contrast' of the noise" ]],
+	float LowStep = 0.5
+		[[ string help = "Low threshold of the smoothstep function.",
+		   string label = "Low Step",
+		   float  min = -1.0, float max = 1.0 ]],		
+	float HiStep = 0.8
+		[[ string help = "High threshold of the smoothstep function.",
+		   string label = "High Step",		
+		   float  min = -1.0, float max = 1.0 ]],		
+	int   Normalize = 1 
+		[[ string widget= "checkBox",
+		   string help = "If the noise is auto-normalized to Amplitude or not." ]],
+	float Amplitude = 1.0
+		[[ string help = "The amplitude of the noise." ]],		
+	float Phase     = 0.0
+		[[ string help = "The 'Phase' is just a 4th coordinate of the noise, can be used to allow it to evolve over time, for example." ]],	
+		   
+	output vector Out = 0,
+	output float  X   = 0,
+	output float  Y   = 0,
+	output float  Z   = 0
+)
+{
+	point pnt = UVW / Scale;
+	
+	color sum = 0;
+	float curFreq = 1.0;
+	float curAmp = Amplitude;
+	
+	// Loop over number of octaves
+	for (int i = 0; i < Octaves; i++)
+	{			
+		// Compute a noise value
+		color ns = noise(Type, pnt * curFreq, Phase + i);
+		
+		if (StepFunction)
+			ns = smoothstep(LowStep, HiStep, ns);
+
+		// Add our result to the output							
+		Out += ns * curAmp;
+		// Add the amplitude to the normalizing sum
+		sum += curAmp;
+
+		// Step up frequency and amplitude		
+		curFreq *= Lacunarity;
+		curAmp  *= Gain;		
+	}
+	
+	if (Normalize)
+		Out /= sum / Amplitude;
+		
+	X = Out[0];
+	Y = Out[1];
+	Z = Out[2];
+}

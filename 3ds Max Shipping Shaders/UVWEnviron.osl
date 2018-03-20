@@ -1,0 +1,39 @@
+// Environment mapping
+// UVWEnviron.osl, by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader UVWEnviron
+[[ string help  = "Environment mapping",
+   string label = "UVW Environment",
+   string category = "UVW" ]]
+(
+	vector Direction  = I,
+	string Mode       = "spherical"
+		[[ string widget  = "popup", 
+		   string options = "spherical|mirrorball",
+		   string label   = "Environment Mode",
+		   string help    = "Type of Environment mapping. Valid values: 'spherical' and 'mirrorball'" ]],
+	output vector UVW = 0.0)
+{
+	float U = 0.0, V = 0.0;
+	
+	if (Mode == "spherical")
+	{
+		U = atan2(Direction[0],Direction[1]) / (M_PI * 2.0);
+		V = 0.5 + (asin(Direction[2]) / M_PI);
+	}
+	
+	if (Mode == "mirrorball")
+	{
+		vector camSpaceDir = transform ("common", "camera", Direction);
+		
+		vector halfwayDir  = normalize(vector(0, 0, 1) + camSpaceDir);
+		
+		U = (halfwayDir[0] + 1.0) / 2.0;
+		V = (halfwayDir[1] + 1.0) / 2.0;				
+	}
+	
+	UVW = vector(U,V,0);
+}

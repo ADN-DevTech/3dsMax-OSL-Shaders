@@ -1,0 +1,48 @@
+// A simple Mandelbrot set generator shader
+// mandelbrot.osl by Zap Andersson 
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+
+shader Mandelbrot
+[[ string help = "A four dimensional mandelbrot/julia set generator" ]]
+(
+    vector UVW    = vector(u,v,0) 
+    	[[ string help = "The coordinate to look up. Defaults to the standard UV channel" ]],
+    vector Center = 0,
+    float  Scale  = 0.35,
+    float  ZImaginary = 0.0,
+    int    Iterations = 100,
+    float  ColorScale = 1.0,
+    float  ColorPower = 1.0,
+    
+    output color Col = 0,
+    output float Fac = 0.0,
+)
+{
+	vector pnt = (UVW - point(0.5,0.5,0)) / Scale - (Center + point(0,0.66,0));
+	
+    float cR = pnt[0];
+    float cI = pnt[1];
+    
+    float zR = pnt[2];
+    float zI = ZImaginary / Scale;
+        
+	int num = 0;        
+        
+    for (num = 0; num < Iterations; num++) 
+    {
+    	float zR2 = zR * zR;    // Real squared
+    	float zI2 = zI * zI;    // Imag. squared
+    	
+    	if (zR2+zI2 > 4.0) 
+    		break; // Escapes to infinity
+	    	
+        zI = 2 * zR * zI  + cR;
+        zR =    zR2 - zI2 + cI;
+    }
+
+    Fac = (float)(num * ColorScale)/ (float)Iterations;
+    Col = wavelength_color(420 + pow(Fac, ColorPower) * 2000);
+}

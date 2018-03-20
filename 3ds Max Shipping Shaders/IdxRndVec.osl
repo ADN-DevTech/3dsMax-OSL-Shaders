@@ -1,0 +1,21 @@
+// Index based Randomizer
+// IdxRndVec.osl, by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader IdxRndVec
+[[ string help  = "Return a randomized vector based on an input integer index",
+   string category = "Math\Vector",
+   string label = "Random by Index (vector)" ]]
+(
+	int   Idx   = 0,
+	int   Seed  = 1,
+	vector Min   = 0.0,
+	vector Max   = 1.0,
+	output vector Out = 0.0
+)
+{
+	float ratio = noise("cell", vector(Idx, Seed, 12)); 
+	Out = mix(Min, Max, ratio);
+}

@@ -1,0 +1,25 @@
+// Subtracts (and optionaly scales) two colors
+// ColorSub.osl, by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader ColorSub
+[[ string help = "Subtracts (and optionaly scales) two colors",
+   string label= "Subtract (color)",
+   string category = "Math\Color" ]]
+(
+	color A = 0.5 [[ string label = "A" ]],
+	color B = 0.5 [[ string label = "B" ]],
+	float A_Amount = 1.0 [[ string label = "A scale" ]],
+	float B_Amount = 1.0 [[ string label = "B scale" ]],
+	int   Clamp    = 0 
+		[[ string widget="checkBox", string label = "Clamp Result" ]],
+	
+	output color Out = 0.0,
+)
+{
+	Out = A*A_Amount - B*B_Amount;
+	if (Clamp)
+		Out = clamp(Out, 0.0, 1.0);
+}

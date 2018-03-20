@@ -1,0 +1,53 @@
+// Shader to get the material ID #
+// MaterialID.osl, by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+/* Function that maps a color by an id  */
+void colorById(int id , output color c)
+{
+	/* Table to match 3ds Max "colors" */
+	int iPPermute[256] = {
+       170,  85,  0, 43, 128, 213, 64, 149, 234, 191, 106, 21, 
+       180,  95, 10, 53, 138, 223, 74, 159, 244, 201, 116, 31, 
+       175,  90,  5, 48, 133, 218, 69, 154, 239, 196, 111, 26, 
+       185, 100, 15, 58, 143, 228, 79, 164, 249, 206, 121, 36, 
+       173,  88,  3, 46, 131, 216, 67, 152, 237, 194, 109, 24, 255, 
+       183,  98, 13, 56, 141, 226, 77, 162, 247, 204, 119, 34,  63, 
+       178,  93,  8, 51, 136, 221, 72, 157, 242, 199, 114, 29,  84, 
+       188, 103, 18, 61, 146, 231, 82, 167, 252, 209, 124, 39, 105, 
+       172,  87,  2, 45, 130, 215, 66, 151, 236, 193, 108, 23,  42, 
+       182,  97, 12, 55, 140, 225, 76, 161, 246, 203, 118, 33, 126, 
+       177,  92,  7, 50, 135, 220, 71, 156, 241, 198, 113, 28, 127, 
+       187, 102, 17, 60, 145, 230, 81, 166, 251, 208, 123, 38, 148, 
+       174,  89,  4, 47, 132, 217, 68, 153, 238, 195, 110, 25, 169, 
+       184,  99, 14, 57, 142, 227, 78, 163, 248, 205, 120, 35, 190, 
+       179,  94,  9, 52, 137, 222, 73, 158, 243, 200, 115, 30, 211, 
+       189, 104, 19, 62, 147, 232, 83, 168, 253, 210, 125, 40,  20, 
+       171,  86,  1, 44, 129, 214, 65, 150, 235, 192, 107, 22,  41, 
+       181,  96, 11, 54, 139, 224, 75, 160, 245, 202, 117, 32, 212, 
+       176,  91,  6, 49, 134, 219, 70, 155, 240, 197, 112, 27, 254, 
+       186, 101, 16, 59, 144, 229, 80, 165, 250, 207, 122, 37, 233 };
+
+	float kMaxColor = 255.0;
+	float h = (iPPermute[(id & 255)]) / kMaxColor;
+	float s = 1 - ( id >> 8 ) / kMaxColor;
+	
+   /* Transform the color from HSV to RGB */
+
+	c = color("hsv", h, s, 1.0);
+}
+
+shader GetMtlID
+[[ string help =  "Get the Material ID (or the Particle ID for Particles) as a color or a number",
+   string label = "Material ID",
+   string category = "Scene" ]]
+(
+        output color Col = 0,
+        output int Index = 1
+)
+{
+	getattribute("mtlID", Index);
+	colorById(Index, Col);
+}

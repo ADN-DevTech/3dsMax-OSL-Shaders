@@ -1,0 +1,38 @@
+// Gabor Noise Shader
+// GaborNoise.osl by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader GaborNoise
+[[ string help  = "A shader for generating Gabor noise and exposing its specific options. ",
+   string label = "Noise (Gabor)" ]]
+(
+	point  UVW    = P 
+		[[ string help = "The UVW coordinate to use. When not connected, defaults to Object space" ]],
+	float  Scale  = 1.0,
+	float  Bandwidth = 1.0,
+	float  Impulses  = 16.0,
+	int    Unsigned  = 1   [[ string widget="checkBox" ]],
+	int    Filter    = 1   [[ string widget="checkBox" ]],
+	int    Anisotropic = 0 
+		[[ string widget="mapper", 
+		   string options="Isotropic:0|Anisotropic along:1|Anisotropic Radial:2" ]],
+	vector Direction = vector(1,0,0),
+	output color Col = 0.5 [[ string label="Col (RGB)" ]],
+	output float R = 0.5,
+	output float G = 0.5,
+	output float B = 0.5	
+)
+{
+	point pnt = UVW / Scale;
+	Col = noise("gabor", pnt, "anisotropic", Anisotropic, "direction", Direction,
+				"bandwidth", Bandwidth, "impulses", Impulses, "do_filter", Filter );
+	
+	if (Unsigned)
+		Col = (Col + 1.0) / 2.0;
+	
+	R = Col[0];
+	G = Col[1];
+	B = Col[2];		
+}

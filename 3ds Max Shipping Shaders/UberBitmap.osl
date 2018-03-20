@@ -1,0 +1,112 @@
+// Load a bitmap into OSL (UBER version, with everything built-in)
+// UberBitmap.osl, by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader UberBitmap
+[[ string help  = "All-in-one shader for loading a bitmap via OpenImageIO.<br>Includes UVW channels and transforms in a monolithic version." ]]
+(  
+	int    UVSet = 1 
+		[[ string label="Map Channel",
+		   string help ="The 3ds max Map channel to look up" ]],
+	float  Scale = 1.0      
+		[[ string help="The overall Scale. Larger number = bigger." ]],
+	vector Tiling = 1.0     
+		[[ string help="A per-axis dividing scale, to subdivide the values. Larger number = smaller." ]],
+	vector Offset = 0.0
+		[[ string help="Moves the UVW coordinates around" ]],
+	
+	float  Rotate = 0.0
+		[[ string help="A rotation angle in <i>degrees</i>." ]],,
+	point  RotCenter = point(0.5,0.5,0)     
+		[[ string label = "Rotation Center",
+		   string help  = "The center of rotation in UVW space" ]],
+	vector RotAxis   = vector(0.0,0.0,1.0)  
+		[[ string label = "Rotation Axis",
+		   string help  = "An axis around which the rotation occurs." ]],
+  
+  string Filename = "uv-grid.png" 
+  	[[ string widget="filename", 
+  	   string label="File name",
+  	   string help="The name of the texture to look up" ]], 
+  string WrapMode = "periodic"
+  	[[ string widget="popup", string options = "default|black|clamp|periodic|mirror",
+  	   string label="Wrap Mode",
+  	   string help="How the texture wraps: (black, clamp, periodic or mirror)." ]],
+ 
+  int    AutoGamma   = 1   
+  	[[ string widget="checkBox" ]],
+  float  ManualGamma = 1.0 
+  	[[ string label="Manual Gamma" ]],
+    
+  output color Col = 0     [[ string label="Col (RGB)" ]],
+  output float R = 0,
+  output float G = 0,
+  output float B = 0,
+  output float A = 1,
+  output float Luminance = 0,
+  output float Average = 0
+)
+{
+	point UVW = point(u,v,0);
+
+	// Get UVW channel
+	if (!getattribute(format("UV%d", UVSet), UVW))
+	{
+		// Get MAXtoA style UV
+		float w = 0.0;
+		
+		// Default UV set handled in
+		// a special way in MAXtoA
+		if (UVSet == 1)
+		{
+			UVW = vector(u,v,0);
+			getattribute("w",  w);
+		}
+		else // ...the others are just attributes
+		{
+			getattribute(format("uv_%d", UVSet), UVW);
+			getattribute(format("w_%d", UVSet), w);
+		}
+		// Insert 3rd dimension if any
+		UVW[2] = w;
+	}
+
+	// Do the transform stuff
+	point p = rotate(UVW - Offset, radians(Rotate), RotCenter, RotCenter + RotAxis) * Tiling / Scale;
+
+	
+	Col  = texture(Filename, p[0], 1.0-p[1], "wrap", WrapMode, "alpha", A);
+	
+	int channels;
+	gettextureinfo(Filename, "channels", channels);
+	if (channels < 4) // No alpha? Set it to opaque
+		A = 1.0;
+
+	// Temporary workaround for color space issues
+	if (AutoGamma)
+	{
+		if (!endswith(Filename, ".exr") &&
+			!endswith(Filename, ".EXR") &&
+			!endswith(Filename, ".hdr") &&
+			!endswith(Filename, ".HDR") &&
+			!endswith(Filename, ".tx") &&
+			!endswith(Filename, ".TX"))
+		{
+			// Gamma 2.2 for sRGB approx)
+			Col = pow(Col, 2.2);
+		}
+	}
+	else
+	{
+		if (ManualGamma != 1.0)
+			Col = pow(Col, ManualGamma);
+	}
+	
+	R = Col[0];
+	G = Col[1];
+	B = Col[2];
+	Luminance = luminance(Col);
+	Average   = (R + G + B) / 3.0;
+}

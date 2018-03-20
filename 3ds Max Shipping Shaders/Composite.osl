@@ -1,0 +1,46 @@
+// Alpha-composits one color over another
+// Composite.osl, by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader Composite
+[[ string help = "Alpha-composits one color over another",
+   string label= "Composite",
+  /* string category = "Math\Color" */]]
+(
+	color TopRGB    = 0.5 
+		[[ string label = "Top layer RGB" ]],
+	float TopA      = 1.0 
+		[[ string label = "Top layer Alpha" ]],
+	color BottomRGB = 0.5 
+		[[ string label = "Bottom layer RGB" ]],
+	float BottomA   = 1.0 
+		[[ string label = "Bottom layer Alpha" ]],		
+
+	int   Premult  = 0 
+		[[ string widget="checkBox", string label = "Premultiplied Alpha", string help = "Assume top layer has premultiplied Alpha" ]],
+		
+	int   Clamp    = 0 
+		[[ string widget="checkBox", string label = "Clamp Result" ]],
+	
+	output color Out = 0.0,
+	output float Alpha = 1.0,
+)
+{
+	// Put in bottom layers contribution
+	Out   = BottomRGB * (1.0 - TopA);	
+	Alpha = BottomA   * (1.0 - TopA);
+
+	// If premultiplied mode, we assume alpha is already multiplied into
+	// the RGB values of the top layer, and top layer should be added as-is	
+	float topmul = Premult?1.0:TopA;
+	
+	// Put in top layers contribution
+	Out   += TopRGB * topmul;
+	Alpha += TopA;
+	
+	// Clamp, to stay within sanity
+	if (Clamp)
+		Out = clamp(Out, 0.0, 1.0);
+}
