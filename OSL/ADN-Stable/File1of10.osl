@@ -1,0 +1,71 @@
+// Pick one of ten filename inputs
+// File1of10.osl, by Zap Andersson
+// Modified: 2017-03-22
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader File1of10
+[[ string help = "A 1-of-10 selector for file names. Cascade multiple for more.",
+   string label= "1 of 10 (filename)",
+   string category = "Switchers" ]]
+(
+	int   Index    = 0 
+		[[ string label = "Input index to use",
+		   string help  = "Pick the index (number) of the input to use. "]],
+	string I0    = "" [[ string label = "Input 0", string widget = "filename" ]],
+	string I1    = "" [[ string label = "Input 1", string widget = "filename" ]],
+	string I2    = "" [[ string label = "Input 2", string widget = "filename" ]],
+	string I3    = "" [[ string label = "Input 3", string widget = "filename" ]],
+	string I4    = "" [[ string label = "Input 4", string widget = "filename" ]],
+	string I5    = "" [[ string label = "Input 5", string widget = "filename" ]],
+	string I6    = "" [[ string label = "Input 6", string widget = "filename" ]],
+	string I7    = "" [[ string label = "Input 7", string widget = "filename" ]],
+	string I8    = "" [[ string label = "Input 8", string widget = "filename" ]],
+	string I9    = "" [[ string label = "Input 9", string widget = "filename" ]],
+
+	int   StartIdx = 0 
+		[[ string label = "Start Index",
+		   string help  = 
+				"Offsets the input index so that this number will map to the first input. "
+				"E.g. if set to 10, the first input (labeled Input 0) will map to index 10, rather than 0. "
+				"This is used when cascading multiple switchers into each other and allow them "
+				"to cover different ranges." ]],
+	int   Mod    = 0 
+		[[ string label = "Range: Number of inputs", 
+		   string help  = "If 0, returns all outputs and any outside the range uses the 'Outside Range' input. "
+		                  "If a nonzero number, only uses that many inputs, repeated in a rotating fashion." ]],
+	string Outside = "" 
+		[[ string label = "Outside Range",
+		   string help  = 
+				"The value to return when the index falls outside the set of available inputs. "
+				"This can be used to connect a second switcher to support a larger number of inputs. "]],
+	
+	output string Out = "",
+)
+{
+	int idx = Index - StartIdx;
+	
+	if (Mod) 
+		idx = idx % Mod;
+
+	if (idx < 0 || idx > 9)
+	{
+		Out = Outside;
+	}
+	else
+	{
+#define OUT(X) if (idx == X) { Out = I##X; } else
+		OUT(0)
+		OUT(1)
+		OUT(2)
+		OUT(3)
+		OUT(4)
+		OUT(5)
+		OUT(6)
+		OUT(7)
+		OUT(8)
+		OUT(9)
+		Out = Outside;
+#undef OUT
+	}
+}
