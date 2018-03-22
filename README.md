@@ -5,9 +5,9 @@ Note that 3ds Max 2019 is the first version to support this standard.
 
 All shaders in this repository are under the Apache 2.0 License - see [LICENSE.txt](LICENSE.txt)
 
-For developer documentation, read [The OSL Map and You.pdf](The%20OSL%20Map%20and%20You%20V1.pdf), 
+For developer documentation, read [The OSL Map and You.pdf](https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/raw/master/The%20OSL%20Map%20and%20You%20V1.pdf), 
 and for more user-facing information - as well as documentation for the 101 shaders shipping with 
-3ds Max - read [OSL shaders in 3ds Max 2019.pdf](OSL%20shaders%20in%203ds%20Max%202019.pdf).
+3ds Max - read [OSL shaders in 3ds Max 2019.pdf](https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/raw/master/OSL%20shaders%20in%203ds%20Max%202019.pdf).
 
 ## Layout of the repository
 
