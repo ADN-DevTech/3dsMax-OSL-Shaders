@@ -3,7 +3,11 @@
 This is the repo to hold shared OSL shaders for 3ds Max 2019 and beyond. 
 Note that 3ds Max 2019 is the first version to support this standard.
 
-All shaders in this repository are under the Apache 2.0 License - see [LICENSE.txt](LICENSE.txt)
+All shaders in this repository are under the *Apache 2.0 License* - see [LICENSE.txt](LICENSE.txt).
+This is an *extremely permissive* Open Source License, where you can share, modify, use (even commercially), 
+abuse, modify, tweak, break, mangle, or do whatever you want with any of the shaders. *This is true 
+also for the shaders that ship with 3ds Max itself.* We believe in being Radically Open with this project. 
+ENJOY!
 
 For developer documentation, read [The OSL Map and You.pdf](The%20OSL%20Map%20and%20You%20V1.pdf), 
 and for more user-facing information - as well as documentation for the 101 shaders shipping with 
