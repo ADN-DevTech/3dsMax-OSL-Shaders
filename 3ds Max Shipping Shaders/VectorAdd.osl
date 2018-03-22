@@ -1,0 +1,21 @@
+// Adds (and optionaly scales) two vectors
+// VectorAdd.osl, by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader VectorAdd
+[[ string help = "Adds (and optionaly scales) two vectors",
+   string label= "Add (vector)",
+   string category = "Math\Vector" ]]
+(
+	vector A = 0.5 [[ string label = "A" ]],
+	vector B = 0.5 [[ string label = "B" ]],
+	float  A_Amount = 1.0 [[ string label = "A scale" ]],
+	float  B_Amount = 1.0 [[ string label = "B scale" ]],
+	
+	output vector Out = 0.0,
+)
+{
+	Out = A*A_Amount + B*B_Amount;
+}

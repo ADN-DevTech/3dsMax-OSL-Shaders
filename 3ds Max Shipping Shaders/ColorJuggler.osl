@@ -1,0 +1,26 @@
+// Color Channel Juggler Shader
+// ColorJuggler.osl, by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader ColorJuggler
+[[ string help = "A utility to combine or split color components",
+   string label = "Components (color)",
+   string category = "Math\Color" ]]
+(
+	color  Input = 0.0 [[ string label="Input (RGB)" ]],
+	float  Ri = Input[0] [[ string label="R" ]],
+	float  Gi = Input[1] [[ string label="G" ]],
+	float  Bi = Input[2] [[ string label="B" ]],
+	output color Out = 0 [[ string label="Out (RGB)" ]],
+	output float R = 0.0,
+	output float G = 0.0,
+	output float B = 0.0
+)
+{
+	Out = color(Ri,Gi,Bi);
+	R = Out[0];
+	G = Out[1];
+	B = Out[2];
+}

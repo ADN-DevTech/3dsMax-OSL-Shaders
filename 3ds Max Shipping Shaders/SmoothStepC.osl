@@ -1,0 +1,23 @@
+// SmoothStepC function
+// SmoothStepC.osl, by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader SmoothStepC
+[[ string help = "A Smooth step-function between two bounds",
+   string label= "SmoothStep (color)",
+   string category = "Math\Color" ]]
+(
+	color Input = 0.5 
+		[[ string help="The Input value" ]],
+	color Low  = 0.4 
+		[[ string help = "The lower bound of the step function" ]],
+	color High = 0.6 
+		[[ string help = "The higher bound of the step function" ]],
+	output color Out = 0.0
+		[[ string help = "The result. Zero if below lower bound, one if above high bound, and a smooth step funciton in between." ]],
+)
+{
+	Out = smoothstep(Low, High, Input);
+}

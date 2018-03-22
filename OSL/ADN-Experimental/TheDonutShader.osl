@@ -1,0 +1,93 @@
+/* The DONUT SHADER, by Uncle Bob */
+// (This is actually a metadata sample by Zap. There is no Uncle Bob. Or is there?)
+// License: Apache 2.0 License
+//   https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader DonutShader
+[[ string label="The Donut Shader",
+   string help ="The Most Amazign Donut Shader Ever!<br/>Get More from UncleBobsShaders.com<br/>",
+   string URL  ="http://UncleBobsShaders.com",
+   string logo ="uncle-bob.jpg"]]
+( 
+	point  Pos = vector(u,v,0),
+	float  Scale = 0.1
+		[[ string help="How big's them thar donuts?" ]],
+	int    Np = 1
+		[[ string help="How dense are them sprinkles?" ]],
+	int    Seed = 42
+		[[ string help="Which deck you wanna pick cards from?",
+		   string label = "Random Seed" ]],
+	float  Radius = 0.15
+		[[ string help="Radius of them sprinkle bits!" ]],
+	float  Size = 0.5
+		[[ string help="Size of them sprinkle bits!" ]],	
+
+	color ColA = color(1,0,0)
+		[[ string help="The first Sprinkle Color",
+		   string label = "A (Sprinkle Color 1)" ]],
+	color ColB = color(1,1,1)
+		[[ string help="The last Srpinkle Color",
+		   string label = "B (Sprinkle Color 2)" ]],
+	color ColC = color(0.2,0.1,0.05)
+		[[ string help="The Chocolate color in between",
+		   string label = "C (Chocolate Color)" ]],
+
+	float sprinkleRoughness = 0.2
+		[[ string help  = "Roughness of the sprinkles themselves",
+		   string label = "Sprinle Roughness" ]],
+	float chocolateRoughness = 0.6
+		[[ string help  = "Roughness of the chocolate between them thar sprinkles",
+		   string label = "Chocolate Roughness" ]],
+
+	output color Colr = 1,
+	output float Fac = 0,
+	output float Random = 0,
+	output float Roughness = 1
+)
+{
+	point p = Pos / Scale;
+	point f = floor(p);
+
+	int xx, yy, np;
+	vector one = 1;
+
+	for (xx = -1; xx <= 1; xx++) {
+		for (yy = -1; yy <= 1; yy++) {
+			point ff = f + vector(xx, yy, 0);
+			float u = Seed;
+
+			for (np = 0; np < Np; np++) {
+				vector pd1 = 2 * noise("cell", ff, u) - one;
+				vector pd2 = 2 * noise("cell", ff, u + 1) - one;
+
+				point p1 = ff + pd1;
+				point p2 = ff + pd2;
+
+				p2 = (p2 - p1)*Size + p1;
+
+				// reduce to 2D 
+				p1[2] = 0;
+				p2[2] = 0;
+				p[2] = 0;
+
+				float r = distance(p1, p2, p);
+				if (r < Radius) {
+					Fac = smoothstep(-1.0, 0.9, 1 - r / Radius);
+					Random = noise("cell", ff, u + 2);
+				}
+				u += 3;
+			}
+		}
+	}
+
+	if (Fac == 0.0)
+	{
+		Colr = ColC;
+		Roughness = chocolateRoughness;
+	}
+	else
+	{
+		Colr = ColA * Random + ColB * (1.0 - Random);
+		Roughness = sprinkleRoughness;
+	}
+}

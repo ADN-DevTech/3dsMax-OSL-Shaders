@@ -1,0 +1,23 @@
+// Multiplies two colors
+// ColorMul.osl, by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader ColorMul
+[[ string help = "Multiplies two colors",
+   string label= "Multiply (color)",
+   string category = "Math\Color" ]]
+(
+	color A = 0.5,
+	color B = 0.5,
+	int   Clamp    = 0 
+		[[ string widget="checkBox", string label = "Clamp Result" ]],
+		
+	output color Out = 0.0,
+)
+{
+	Out = A * B;
+	if (Clamp)
+		Out = clamp(Out, 0.0, 1.0);
+}

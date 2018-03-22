@@ -1,0 +1,17 @@
+// Pass-through shader for debugging, instancing etc.
+// SetString.osl, by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader SetString
+[[ string help = "Just gives a string value.",
+   string label= "String",
+   string category = "Values" ]]
+(
+	string        In  = "" [[ string label = "String" ]],
+	output string Out = ""
+)
+{
+	Out = In; // Does nothing
+}

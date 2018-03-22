@@ -1,0 +1,103 @@
+// A shader that randomizes UVWs in rectangular blocks 
+// and outputs an "Edge" value for a bump effect at borders of said blocks
+// BlockRandomizer.osl, by Zap Andersson
+// Modified: 2017-03-22
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+float edgemath(float coord, float width)
+{
+	if (coord > width)
+		return 1.0;
+	else
+		return coord / width;
+}
+
+shader BlockRandomizer
+[[ string label = "Block Randomizer",
+   string help  = 
+       "Breaks a 3d space into random rectangular sub-blocks, and randomizes UVW coordinates within each block. "  
+       "Also outputs an 'Edge' output that can be used to drive a bump effect that shows the 'seams' between blocks."
+       
+]]
+(
+	point  Vector = transform("object", P) 
+	    [[ string help  = "The UVW space to use. Defaults to Object Space",
+	       string label = "UVW" ]],	
+	vector Size = 10.0
+	    [[ string help  = "The size of each 'Cell' to break the UVW space into. The <b>Shift</b> parameter then tweaks this to make it random."]],		
+	int    ShiftMode = 1
+	    [[ string help  = 
+	        "If on, box borders are shifted around randomly. If off, shifts are nonrandom. " 
+	        "Edges are shifted <i>up to</i> the amount set in the <b>Shift</b> parameter.",
+	        string label  = "Random Block-edge Shifting",
+	        string widget = "checkBox" ]],		
+	vector Shift     = 0.0
+	    [[ string help  = "The amount to shift block edges around. Makes sense if this is <i>smaller</i> than the block size for each axis."]],		
+	int	   Seed      = 0
+	    [[ string help  = "The random Seed"]],		
+	    
+	vector Offset    = 1.0
+	    [[ string help  = "The amount to randomly shift the UVW coordinates within a block"]],			
+	float  Rotate    = 0.0
+	    [[ string help  = "Rotational randomness (in Degrees)"]],			
+	float  Axistilt  = 0.0
+	    [[ string help  = "Tilt amount for the rotational axis."]],		
+	    
+	float  EdgeWidth = 0.0
+	    [[ string help  = "Width of the effect coming out of the 'Edge' output."]],		
+
+	// Outputs	
+	output vector UVW     = 0.0,
+	output float  Edge    = 0.9,
+	output int    OutIdx  = 0,
+)
+{
+	point cellsize = Size;
+	point boxpoint = Vector / cellsize;
+	point newVector;
+	
+	// Pick style of Randomness
+	if (ShiftMode)
+ 		newVector = Vector + noise("cell", boxpoint + point(Seed, Seed * 13, Seed * 27)) * Shift;
+	else
+	{
+		// A uniform shift, non-random
+		int digitalX = int(boxpoint[0]);
+		int digitalY = int(boxpoint[1]) + digitalX;
+		int digitalZ = int(boxpoint[2]) + digitalY;
+		newVector = Vector + vector(digitalX, digitalY, digitalZ) * Shift;
+	}
+	
+	// Compute the index 
+	int   index    = int(noise("cell", newVector / cellsize) * 16384);
+	int   myIndex  = index + Seed * 147;
+	point myPoint  = mod(newVector, Size);
+	
+	// Compute the new boxpoint
+	boxpoint = mod (newVector, cellsize);
+	
+	// Compute the edge output
+	Edge *= edgemath(boxpoint[0], EdgeWidth);
+	Edge *= edgemath(cellsize[0] - boxpoint[0], EdgeWidth);
+	Edge *= edgemath(boxpoint[1], EdgeWidth);
+	Edge *= edgemath(cellsize[1] - boxpoint[1], EdgeWidth);
+	Edge *= edgemath(boxpoint[2], EdgeWidth);
+	Edge *= edgemath(cellsize[2] - boxpoint[2], EdgeWidth);
+	Edge += 0.1; // A small bias
+
+	// Compute the offset
+	point offset    = (noise("cell", myIndex * 6)  - point(0.5,0.5,0.5)) * Offset;
+	// Compute rotation, where the X is amount of rotation and Y and Z
+	// are the offset vectors used to tilt the rotational axis
+	point rotrandom = (noise("cell", myIndex * 13) - point(0.5,0.5,0.5));
+
+	// Do the rotation
+	myPoint = rotate(myPoint, rotrandom[0] * radians(Rotate), point(0), point(rotrandom[1] * Axistilt, rotrandom[2] * Axistilt, 1.0));
+	// Apply the offset
+	myPoint += offset;
+
+	// Return the Values
+	UVW     = myPoint;
+	OutIdx  = myIndex;
+}

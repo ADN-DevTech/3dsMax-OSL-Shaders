@@ -1,0 +1,57 @@
+// Maps one range of float numbers to another
+// FloatRange.osl, by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader FloatRange
+[[ string help  = "Maps one range of float numbers into another",
+   string label = "Range/Remapper",
+   string category = "Math\Float" ]]
+(
+	float Input  = 0.0
+		[[ string label = "Input value",
+		   string help  = 
+		      "The value to be remapped. As this moves from the <b>Input Range Start</b> "
+		      "to <b>Input Range End</b> values the output will change from the "
+		      "<b>Output Range Start</b> to the <b>Output Range End</b> values "
+		      "following the shape dictated by <b>Curve</b>" ]],
+	int   Clamp  = 1 
+		[[ string widget= "checkBox",
+		   string label = "Clamp to Output range",
+		   string help  = "When on, restricts the output to remain between the start and end of the output range. When off, the remapping is extrapolated beyond the endpoints of the range." ]],
+	float InStart  = 0.0
+		[[ string label = "Input Range Start",
+	   	   string help  = "The start of the input range" ]],
+	float InEnd = 1.0
+		[[ string label = "Input Range End",
+	   	   string help  = "The end of the input range" ]],
+	float OutStart = 0.0
+		[[ string label = "Output Range Start",
+	   	   string help  = "The start of the output range." ]],
+	float OutEnd = 1.0
+		[[ string label = "Output Range End",
+	   	   string help  = "The end value of the output range." ]],
+	float Curve  = 1.0
+		[[ string label = "Remapping Curve",
+	   	   string help  = 
+	   	       "Apply a power function to the remapping. <ul>"
+	   	       "<li>1.0 means a linear mapping. "
+	   	       "<li>A value lower than 1.0 will push the middle lower (closer to <b>Output Start Range</b>)"
+	   	       "<li>A value higher than 1.0 will push the middle higher (closer to <b>Output End Range</b>)"
+	   	       "</ul>" ]],
+	
+	output float Out = 1.0
+)
+{
+	float fac = (Input - InStart) / (InEnd - InStart);
+	Out = OutStart + pow(fac, 1.0 / Curve) * (OutEnd - OutStart);
+	
+	if (Clamp)
+	{
+		if (OutStart < OutEnd)
+			Out = clamp(Out, OutStart, OutEnd);
+		else
+			Out = clamp(Out, OutEnd, OutStart);		
+	}
+}

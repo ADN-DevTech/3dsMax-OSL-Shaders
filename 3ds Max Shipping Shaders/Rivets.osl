@@ -1,0 +1,165 @@
+// Steampunk Rivets and wobbly metal shader
+// Rivets.osl, by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+float edgeTweak(float gap, float width, float coord)
+{
+	return smoothstep(gap, gap+width, coord);
+}
+
+shader Rivets
+[[ string help = "Adds rivets along the edges of UV space 1x1 squares, as<br/>well as bending the squares for Steam-Punky un-evenness" ]]
+(
+	// Parmeters and their DEFAULT values
+	point UVW   = vector(u,v,0) 
+		[[ string help="The position to shade. Default to the standard UV space." ]],
+	float Scale = 0.5, 
+  
+	int   U_Rivets = 6,
+	int   V_Rivets = 6,
+	float RivetRadius = 0.3,
+	float Dirt = 0.1,
+  
+	int   Seed = 0,
+  
+	color PlateColor = color(0.5,0.7,0.5),
+	color RivetColor = color(0.7,0.3,0.1),
+	color DirtColor  = color(0.1,0.1,0.1),	
+	color SpaceColor = color(0.08,0.04,0.01),
+	color HoleColor  = 0.02,
+  
+	vector RivetCenter = vector(0.5,0.5,0),
+	vector RivetRandom = 0,
+	float  RivetProbability = 1.0,
+	float  HoleRadius  = 0.1,
+	float  HoleEdge    = 0.02,
+	
+	float  BumpAmount = 2.0,
+	float  BumpShape  = 0.25,
+	
+	float  PlateGap    = 0.01,
+	float  PlateEdge   = 0.02,
+	vector PlateWobble = 0.0,
+	vector WobbleScale = 1.0,
+	int    RivetWobble = 1
+		[[ string widget = "checkBox",
+		   string label  = "Rivets follow plate wobble",
+		   string help   = "If enabed, rivets will follow the warped space of the plates" ]],  
+	output color Col = 0,
+	output float RivetFac  = 0,
+	output float HoleFac   = 0,
+	output float PlateFac  = 0,
+	output float Dist      = 0,
+	output float Bump      = 0,
+	output int   TileIdx   = 0,
+	output int   PlateIdx  = 0,
+)
+{
+	// Main Shader code
+	float RR = RivetRadius / 2.0;
+	point p  = UVW / Scale;
+
+	// And index number for each plate, so the wobble
+	// randomness can be different for each plate
+	int plateIdx = int(p[0]) * 13 + int(p[1]) * 32 + 115 * Seed;
+
+	// Throw away the integer part, so we get 0 - 1.0 
+	// as coordinates inside each "plate"
+	point modP = fmod(p, point(1));
+
+	// Tweak the point a little by the "wobble"	
+	vector wob = noise("perlin", modP / WobbleScale, plateIdx);
+	
+	modP += (PlateWobble / 10.0) * wob;
+	
+	// Check if we are near the edge of the plate
+	if (modP[0] < PlateGap || 1.0 - modP[0] < PlateGap ||
+		modP[1] < PlateGap || 1.0 - modP[1] < PlateGap)
+	{
+		// If so, use the Space Color (for the gap)
+		Col      = SpaceColor;
+		PlateFac = 0.0;
+		PlateIdx = 0;
+	}
+	else 
+	{
+		// We are on the plate
+		Col      = PlateColor;
+		PlateFac = 1.0 + PlateWobble[2] * wob[2] * 5.0;
+		
+		// If we are on the plate, but near the edge, tweak
+		// the PlateFactor output (which we also use for bump)
+		// to give a bump effect
+		PlateFac *= edgeTweak(PlateGap, PlateEdge, modP[0]);
+		PlateFac *= edgeTweak(PlateGap, PlateEdge, modP[1]);		
+		PlateFac *= edgeTweak(PlateGap, PlateEdge, 1.0 - modP[0]);
+		PlateFac *= edgeTweak(PlateGap, PlateEdge, 1.0 - modP[1]);
+		
+		PlateIdx = plateIdx;
+	}
+	
+	// Should rivets follow plate wobble?
+	if (RivetWobble)
+		p += (PlateWobble / 10.0) * wob;
+	
+	// Compute rivet coordinates :)
+	float rivetu = p[0] * U_Rivets;
+	float rivetv = p[1] * V_Rivets;
+	
+	// Calculate rivet cell number in U and V
+	int   rcU = int(rivetu);
+	int   rcV = int(rivetv);
+
+	// Compute an index for the tile, to seed other randomness with
+	TileIdx = rcU + rcV * 100 + 50 * Seed;
+	
+	// Mod down to one plate
+	rcU = rcU % U_Rivets;
+	rcV = rcV % V_Rivets;
+
+	// Only do rivets in the 1st row, 1st column, last row or last column
+	if (rcU == 0 || rcV == 0 || 
+	    rcU == U_Rivets-1 || rcV == V_Rivets-1)
+	{
+		// In a rivet row
+		vector rnd = (noise("cell", TileIdx) - vector(0.5,0.5,0));
+		int    doit = rnd[2] < RivetProbability;
+		rnd[2] = 0;
+		
+		point rp = point(fmod(rivetu, 1.0), fmod(rivetv, 1.0), 0);
+		point rc = RivetCenter + RivetRandom * rnd;
+		
+		float dist  = distance(rp, rc);
+		Dist = dist / RR;		
+		
+	
+		// Check if we are inside a rivet
+		if (dist < RR && doit)
+		{		
+			Bump     = pow(sin((1.0 - Dist) * 1.5), BumpShape) * BumpAmount;			
+			Col      = RivetColor;
+			RivetFac = 1.0;
+		}
+		else if (dist < RR + Dirt) // We are outside it, but in the dirt area
+		{
+			float da = smoothstep(0.0, 1.0, (dist - RR) / Dirt);			
+			Col = mix(DirtColor * Col, Col, da);
+			
+			if (dist < HoleRadius + HoleEdge)
+			{
+				PlateFac *= clamp((dist - HoleRadius) / HoleEdge, 0.0, 1.0);
+				if (dist < HoleRadius)
+				{
+					Col = HoleColor;
+					RivetFac = 1.0;
+					HoleFac  = 1.0;
+				}
+			}
+		}		
+	}	
+	
+	// Add the platefactor to bump output
+	Bump += PlateFac;
+}

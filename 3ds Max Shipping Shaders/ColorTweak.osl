@@ -1,0 +1,45 @@
+// Tweak a color.
+// ColorTweak.osl, by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader ColorTweak
+[[ string help = "Tweaks a color",
+   string label= "Tweak (color)",
+   string category = "Math\Color" ]]
+(
+	color Input = 0.0,
+	
+	vector HSV = vector(0.0,1.0,1.0)
+		[[ string help = "Hue shift and Saturation / Value multiplier " ]],	
+	color InputMin   = 0.0
+		[[ string help = "The input value that maps to the darkest output. Incoming black level. " ]],	
+	color InputMax   = 1.0
+		[[ string help = "The input value that maps to the brightst output. Incoming white level. " ]],	
+	color OutputMin  = 0.0
+		[[ string help = "The output black level." ]],	
+	color OutputMax  = 1.0
+		[[ string help = "The output white level." ]],
+
+	int   Clamp = 0 
+		[[ string widget = "checkBox",
+		   string help = "Clamp the output to the 0-1 range for each component" ]],
+		
+	output color Out = 0.0,
+)
+{
+	color col = (Input - InputMin) / InputMax;
+
+	// Tramsform to HSV space	
+	color hsv = transformc("rgb", "hsv", col);
+
+	hsv[0] += HSV[0]; // Add to hue (offset)
+	hsv[1] *= HSV[1]; // Scale saturation
+	hsv[2] *= HSV[2]; // Scale value
+	
+	// Convert back to RGB
+	col = transformc("hsv", "rgb", hsv);
+		
+	Out = mix(OutputMin, OutputMax, col);
+}

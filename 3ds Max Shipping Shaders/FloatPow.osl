@@ -1,0 +1,18 @@
+// Raise a float to another.
+// FloatPow.osl, by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader FloatPow
+[[ string help = "Raise a float to another: A<sup>B</sup>",
+   string label= "Power",
+   string category = "Math\Float" ]]
+(
+	float A = 0.0 [[ string label = "A (base)" ]],
+	float B = 0.0 [[ string label = "B (exponent)" ]],
+	output float Out = 0.0,
+)
+{
+	Out = pow(A, B);
+}

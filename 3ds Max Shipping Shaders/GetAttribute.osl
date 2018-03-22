@@ -1,0 +1,50 @@
+// Shader to get any named Scene attribute
+// GetAttribute.osl, by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader GetAttribute
+[[ string help = "Get any named attribute, as well a<br/>user defined per-object properties.",
+   string label = "Named Attribute",
+   string category = "Scene" ]]
+(
+	string        Attribute = "" 
+		[[ string help = "Name of the scene attribute to read. If the attributes come from the 3ds max 'User Defined' object properties, check the 'User Defined Property' checkbox below" ]],
+	int           AddPrefix = 1 
+		[[ string widget = "checkBox", 
+		   string label = "User Defined Property",
+		   string help  = 
+		   		"User Defined Properties come from the 'User Defined' tab in the 3ds Max object properties. "
+		   		"Those are shared with OSL as attributes with a 'usr_' prefix. "
+		   		"Checking this box automatically adds this prefix." 
+		]],
+	color  ColDef      = color(1.0,0.0,0.0) 
+		[[ string help = "The color used when the property is missing",
+		   string label= "Color Default" ]],
+	float  FltDef      = 0.0          
+		[[ string help = "The float used when the property is missing",
+		   string label= "Float Default" ]],
+	int    IntDef      = 0            
+		[[ string help = "The integer used when the property is missing",
+		   string label= "Integer Default" ]],
+	string StrDef      = ""           
+		[[ string help = "The string used when the property is missing",
+		   string label= "String Default" ]],
+	output color  Col   = ColDef,	
+	output float  Flt   = FltDef,
+	output int    Int   = IntDef,
+	output string Str   = StrDef,	
+)
+{
+	// Should we add the prefix for the max User Defined
+	// attributes? ("usr_") ?
+	string att = AddPrefix ? concat("usr_", Attribute):Attribute;	
+	// The OSL Optimizer will cause only the 
+	// one of these actually connected to an
+	// output to execute....
+	getattribute(att, Col);	
+	getattribute(att, Flt);	
+	getattribute(att, Int);	
+	getattribute(att, Str);	
+}

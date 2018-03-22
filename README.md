@@ -1,6 +1,17 @@
 # 3dsMax-OSL-Shaders
 
-This will be the repo to hold shared OSL shaders for 3ds Max. Note that 3ds Max neptune (currently in beta only) is the only version to support this standard.
+This is the repo to hold shared OSL shaders for 3ds Max 2019 and beyond. 
+Note that 3ds Max 2019 is the first version to support this standard.
+
+All shaders in this repository are under the *Apache 2.0 License* - see [LICENSE.txt](LICENSE.txt).
+This is an *extremely permissive* Open Source License, where you can share, modify, use (even commercially), 
+abuse, modify, tweak, break, mangle, or do whatever you want with any of the shaders. *This is true 
+also for the shaders that ship with 3ds Max itself.* We believe in being Radically Open with this project. 
+ENJOY!
+
+For developer documentation, read [The OSL Map and You.pdf](The%20OSL%20Map%20and%20You%20V1.pdf), 
+and for more user-facing information - as well as documentation for the 101 shaders shipping with 
+3ds Max - read [OSL shaders in 3ds Max 2019.pdf](OSL%20shaders%20in%203ds%20Max%202019.pdf).
 
 ## Layout of the repository
 
@@ -31,27 +42,13 @@ that your old scenes no longer work.
 
 #### OSL\ADN-Stable
 
-These are shaders that are mature anough and stable enough that the intent is that
+These are shaders that are mature enough and stable enough that the intent is that
 the shaders interface and behaviour won't substantially change in the future. It may
 gain parameters, but defaults should be compatible with the previous version. These 
 shaders are candidates to be included in the shipping set in the next version.
 
 #### OSL\ADN-User Submitted
 
-These are shaders submitted by users. Please only upload shaders you've written yourself
-or where you can be certain the license is explicitly permissive. This is a sharing site
-and OSL files will be flying left and right.
+These are shaders submitted by users. 
 
-Each user builds their own subdirectory under this to place their shaders. Some may later
-be promoted to other folders.
-
-
-## To submit your own work to this repository
-
-Standard GitHub workflow: 
-
-* Fork the repository on GitHub
-* Clone your fork to your local computer
-* Work in your local repo in the "OSL\ADN-User Submitted" folder, and push changes to a branch on your forked repository
-* When ready, submit a pull request
-* ADN-DevTech will check out your submission and merge it into this repository
+If you want to contribute, read the [how to submit](HOW-TO-SUBMIT.md) documentation for details.

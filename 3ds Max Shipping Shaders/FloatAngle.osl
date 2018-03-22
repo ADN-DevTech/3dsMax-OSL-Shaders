@@ -1,0 +1,18 @@
+// Angle of vector made by two floats.
+// FloatATan.osl, by Zap Andersson
+// Modified: 2018-02-08
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader FloatAngle
+[[ string help = "Angle (in radians) of 2D Vector",
+   string label= "Angle",
+   string category = "Math\Float" ]]
+(
+	float X = 0.0,
+	float Y = 0.0,
+	output float Out = 0.0 [[ string label="Angle (radians)" ]],
+)
+{
+	Out = atan2(X, Y);
+}
