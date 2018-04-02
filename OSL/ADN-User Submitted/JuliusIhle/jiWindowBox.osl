@@ -1,0 +1,131 @@
+// jiWindowBox - creates a fake "room" from a single plane
+// jiWindowBox.osl, by Julius Ihle, slightly modified for 3ds max by Zap Andersson
+// Modified: 2018-04-02
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader jiWindowBox_Max
+[[  string label = "jiWindowBox",
+    string URL   = "http://julius-ihle.de/?p=2451",
+    string logo  = "jiWindowBox.png", 
+    string help  = "Shader that simulates the appearance of a room with depth on a flat plane, "
+                   "using an image set up in a particular format.<br>For setup information click ", ]]
+(
+	int zUpAxis = 1             [[ string widget = "checkBox", string label = "Z is Up" ]],
+	string filename = ""        [[ string widget = "filename", string label = "Filename" ]],
+	int textureFlip = 0         [[ string widget = "checkBox", string label = "Texture Flip (vertical)" ]],
+    int textureFlop = 0         [[ string widget = "checkBox", string label = "Texture Flop (horizontal)" ]],
+	float roomDepth = 1         [[ float min = 0.1, float max = 100, string label = "Room Depth" ]],
+    float widthOverscan = 0     [[ float min = 0.0, float max = 0.9, string label = "Width Overscan" ]],
+	float heightOverscan = 0    [[ float min = 0.0, float max = 0.9, string label = "Height Overscan" ]],   
+	int enableMidground = 0     [[ string widget = "checkBox", string label = "Enable Midground" ]],
+	float midgroundDepth = 0.5  [[ float min = 0.05, float max = 99, string label = "Midground Depth" ]],  
+	float midgroundOffsetX = 0  [[ string label = "Midground Offset X"]],
+	float midgroundOffsetY = 0  [[ string label = "Midground Offset Y"]],  
+	int enableCurtains = 0      [[ string widget = "checkBox", string label = "Enable Curtains" ]],
+	output color outRGB = 0.0,
+)
+{
+    //user controls remapping
+    float roomDepthMult = clamp(roomDepth,0.1,100);
+    float heightOverscanMult = 1 - clamp(heightOverscan,0,0.9);
+    float widthOverscanMult = 1 - clamp(widthOverscan,0,0.9); 
+    float midgroundDepthMult = clamp(midgroundDepth,0.05,roomDepthMult-0.01); 
+    float midgroundOffY = midgroundOffsetY * (textureFlip*2-1) * 0.1;
+    float midgroundOffX = midgroundOffsetX * (textureFlop*2-1) * 0.1;
+    
+    
+    //global variables & remapping 
+    vector objI = transform("object", -I);
+    if (zUpAxis > 0){ 
+      objI = vector(-objI[0],-objI[1],-objI[2]) * color(widthOverscanMult, heightOverscanMult, 1);		//reorder to match UV for Y up axis
+    } else {
+      objI = vector(-objI[0],objI[2],-objI[1]) * color(widthOverscanMult, heightOverscanMult, 1);		//reorder to match UV for Z up axis
+    } 
+    color objPOrig = (color(u,v,0.5) * 2 - 1) * 0.5 + 0.5;							//for curtains
+    color objP = (color(u,v,0.5) * 2 - 1) * color(widthOverscanMult, heightOverscanMult, 1)  * 0.5 + 0.5; 	//UV seems to be the better approach
+    
+    
+    //bases for width/height/depth
+    vector sections = step(0, objI);
+    color baseDepth = (objP-sections)/(-objI * roomDepthMult);
+    color mgDepth = (objP-sections)/(-objI * midgroundDepthMult);    
+    color baseBack = (objP-sections)/(-objI);
+    color baseWidth = baseDepth * roomDepthMult;
+    
+    
+    
+    //depth and width ramps
+    color baseDepthX = (baseDepth[1]*objI+objP + 1);
+    color baseDepthY = (baseDepth[0]*objI+objP + 1);
+    color baseWidthX = (baseWidth[1]*objI+objP + 1);
+    color baseWidthY = (baseWidth[0]*objI+objP + 1);
+
+    float horizU = baseDepthY[2] - 0.5;
+    float vertU = baseWidthX[0] - 1;
+    float horizV = baseWidthY[1] - 1;
+    float vertV = baseDepthX[2] - 0.5;
+    
+    
+    //convert ramps to UV/ST... WIP - not very efficient
+    float sideWallsMask = step(0,horizU) * step(0,1-max(horizV, 1-horizV)); 
+    color sideWallsUV = color(horizU, horizV, 0) / 3;
+    color rWallUV = (sideWallsUV + color(2.0/3.0, 1.0/3.0, 0)) * sideWallsMask * sections[0];
+    color lWallUV = (sideWallsUV + color(0.0, 1.0/3.0, 0)) * sideWallsMask * (1-sections[0]);
+    lWallUV[0] = (1.0/3.0 - lWallUV[0]) * sideWallsMask * (1-sections[0]);     
+    
+    float FloorCeilMask = step(0,vertV) * step(0,1-max(vertU, 1-vertU));
+    color FloorCeilUV = color(vertU, vertV, 0) / 3;
+    color ceilUV = (FloorCeilUV + color(1.0/3.0, 2.0/3.0, 0)) * FloorCeilMask * sections[1];
+    color floorUV = (FloorCeilUV + color(1.0/3.0, 0, 0)) * FloorCeilMask * (1-sections[1]);
+    floorUV[1] = (1.0/3.0 - floorUV[1]) * FloorCeilMask * (1-sections[1]);
+    
+    color backWallUV = ((baseBack[2]*objI + (objP/2)/(roomDepthMult)) * (roomDepthMult*2) / 3 + color(1.0/3.0, 1.0/3.0, 0) ) * (1 - max(step(0,horizU), step(0,vertV)));
+
+    
+    color midgroundUV = (1.0/3.0 - (baseBack[2]*objI + (objP)/(midgroundDepthMult*2)) * (midgroundDepthMult*2) / 3);
+    float midgroundMask = step( 0, midgroundUV[1] * 3 * (1-midgroundUV[1]*3) ) * step( 0, midgroundUV[0] * (1.0/3.0-midgroundUV[0]) ); 
+    midgroundUV = (color(midgroundOffX, midgroundOffY, 0) + midgroundUV) * midgroundMask;
+    midgroundUV[1] = 1-midgroundUV[1];  
+    
+    color curtainsUV = objPOrig * color(1.0/3.0, 1.0/3.0, 1);
+    curtainsUV[0] = 1.0/3.0 - curtainsUV[0];
+
+    
+    color finalUV = ceilUV + floorUV + rWallUV + lWallUV + backWallUV;
+    
+    
+    //flipping ctrl
+    if (textureFlop > 0){
+        midgroundUV[0] = 1.0/3.0 - midgroundUV[0];
+        curtainsUV[0] = 1.0/3.0 - curtainsUV[0];
+    }else
+        finalUV[0] = 1-finalUV[0];
+    if (textureFlip > 0){
+        finalUV[1] = 1-finalUV[1];
+        midgroundUV[1] = 1 - midgroundUV[1] + 2.0/3.0;
+        curtainsUV[1] = 1.0/3.0 - curtainsUV[1];
+    }
+    
+    color roomRGB = texture(filename, finalUV[0], finalUV[1]);
+    color finalRGB;
+    
+    //midground switch
+    if (enableMidground > 0){
+        float midgroundA;
+        color midgroundRGB = texture(filename, midgroundUV[0], midgroundUV[1], "alpha", midgroundA);
+        finalRGB = mix(roomRGB,midgroundRGB,midgroundA);
+    }
+    else{
+        finalRGB = roomRGB;
+    }
+    
+    //curtains switch
+    if (enableCurtains > 0){
+        float curtainsA;
+        color curtainsRGB = texture(filename, curtainsUV[0], curtainsUV[1], "alpha", curtainsA);
+        finalRGB = mix(finalRGB,curtainsRGB,curtainsA);
+    }
+
+    outRGB = finalRGB;
+}
