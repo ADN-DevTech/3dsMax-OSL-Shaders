@@ -1,0 +1,35 @@
+// License: Apache 2.0 License
+// https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+// Falloff
+// csFalloff.osl, by Changsoo Eun
+
+shader csFalloff
+[[ string help = "Falloff map OSL version\nby Changsoo Eun",
+   string label = "Falloff"]]
+(
+	color Face = 1.0,
+	color Away = 0.0,
+	string Coordspace = "camera" 
+		[[ string widget="popup",
+		   string help = "world, object, cmera, shader, screen, NDC, raster, or an explicitly named coordinate system",
+		   string options="world|object|camera|shader|screen|NDC|raster",
+		   int editable=1 ]],
+	vector FalloffDirection = vector (0.0, 0.0, 1.0)	   
+		[[ 	string label = "Falloff Direction",
+			string help = "Chooses the direction of falloff. Z-axis(0, 0, 1) is viewing direction for camera." ]],
+	int Type = 0
+  	[[ 	string widget = "mapper",
+		string help = "Perpendicular/Parallel : Sets the angular falloff ranges between face normals that are perpendicular to the falloff direction and normals that are parallel to the falloff direction. The falloff range is based on a 90-degree change in normal direction. (Default.)     Towards/Away : Sets the angular falloff ranges between face normals that face toward (parallel to) the falloff direction and normals that face away from the falloff direction. The falloff range is based on a 180-degree change in normal direction." ,
+		string options = "Perpendicular/Parallel:0|Towards/Away:1" ]],
+	
+	output color Out = 0.0,
+	output float MixAmount = 0.0
+)
+{
+	vector normalDir = transform(Coordspace, N);
+	MixAmount = dot (normalDir, FalloffDirection);
+	if (Type == 1)  
+			MixAmount = (MixAmount + 1.0)/2.0;
+	Out = mix(Away, Face, MixAmount);
+	
+}

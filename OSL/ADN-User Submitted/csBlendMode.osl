@@ -1,0 +1,156 @@
+// License: Apache 2.0 License
+// https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+// Composite with Blend mode
+// csBlendMode.osl, by Changsoo Eun
+
+shader csBlendMode
+[[ string help = "Composite FG and BG with Photoshop/legacy Composite map blend mode\nby Changsoo Eun",
+   string label= "BlendMode"]]
+(
+	string mode = "Normal" 
+		[[ string widget="popup",
+		   string help = "Normal, Average, Darken, Multiply, Color Burn, Linear Burn, Lighten, Screen, Color Dodge, Linear Dodge, Spotlight, Spotlight Blend, Overlay, Hard Light, Soft Light, Pin Light, Hard Mix, Difference, Exclusion, Subtract, Divide, Hue, Saturation, Color, Value",
+		   string options="Normal|Average|Darken|Multiply|Color Burn|Linear Burn|Lighten|Screen|Color Dodge|Linear Dodge|Spotlight|Spotlight Blend|Overlay|Hard Light|Soft Light|Pin Light|Hard Mix|Difference|Exclusion|Subtract|Divide|Hue|Saturation|Color|Value",
+		   int editable=0 ]],
+	color fgRGB = color(1.0, 0.5, 0.0)
+		[[ string label = "Foreground" ]],
+	float fgA = 1.0 
+		[[ string label = "Foreground Opacity" ]],
+	color bgRGB = color(0.0, 1.0, 0.0)
+		[[ string label = "Background" ]],
+	float bgA = 1.0 
+		[[ string label = "Background Opacity" ]],		
+	int   Premult  = 0 
+		[[ string widget="checkBox", string label = "Premultiplied Alpha", string help = "Assume top layer has premultiplied Alpha" ]],		
+	int   Clamp    = 0 
+		[[ string widget="checkBox", string label = "Clamp Result" ]],
+	output color Out = 0.0,
+	output float Alpha = 0.0,	
+)
+{
+	float fgMul = Premult?1.0:fgA;
+	// Unpremultiply
+	color fg = fgRGB/fgMul;
+	color bg = bgRGB;
+				
+	color blended = 0.0;
+	if (mode == "Normal")
+		blended = fg;
+	if (mode == "Average")
+		blended = (bg+fg)/2.0;			
+	if (mode == "Darken")
+		blended = min(bg, fg);
+	else if (mode == "Multiply")
+		blended = (bg * fg);
+	else if (mode == "Color Burn"){
+		if (fg == 0.0)
+			blended = fg;
+		else 
+			blended = max(1.0 - (1.0 - bg)/fg, 0.0);
+	}
+	else if (mode == "Linear Burn")
+		blended = max((bg + fg - 1.0), color (0.0));
+	else if (mode == "Lighten")
+		blended = max(bg, fg);
+	else if (mode == "Screen")
+		blended = fg + bg - fg * bg;
+	else if (mode == "Color Dodge"){
+		if (fg == color (1.0))
+			blended = color (1.0);
+		else 
+			blended = min(bg/(1.0 - fg), color (1.0));		
+	}
+	else if (mode == "Linear Dodge")		
+		blended = min((bg + fg), color (1.0));
+	else if (mode == "Spotlight")		
+		blended = min(2.0*fg*bg, 1.0);
+	else if (mode == "Spotlight Blend")		
+		blended = min(fg*bg+bg, 1.0);
+	else if (mode == "Overlay"){
+		float bgl = luminance (bg);		
+		if (bgl <= 0.5)
+			blended = (2.0 * bg * fg);		
+		else
+			blended = (1.0 - 2.0*(1.0 - fg)*(1.0 - bg));
+	}
+	else if (mode == "Soft Light"){
+		float fgl = luminance (fg);		
+		if (fgl <= 0.5)
+			blended = bg * (bg + 2.0*fg*(1.0 - bg));
+		else 
+			blended = bg + (2.0*fg - 1.0)*(sqrt(bg) - bg);
+	}		
+	else if (mode == "Hard Light"){
+		float fgl = luminance (fg);		
+		if (fgl <= 0.5)
+			blended = 2.0*fg*bg;
+		else 
+			blended =  1.0 - 2.0*(1.0 - fg)*(1.0 - bg);			
+	}	
+	else if (mode == "Pin Light"){
+		float PinLight (float b, float a){
+			if ((a > 0.5 && a > b) || (a < 0.5 && a < b))
+				return a;
+			else
+				return b;
+		}
+		blended[0] = PinLight (bg[0], fg[0]);
+		blended[1] = PinLight (bg[1], fg[1]);
+		blended[2] = PinLight (bg[2], fg[2]);				
+	}		
+	else if (mode == "Hard Mix"){
+		float HardMix (float b, float a){
+			if ((a + b) <= 1.0)
+				return 0.0;
+			else
+				return 1.0;
+		}		
+		blended[0] = HardMix (bg[0], fg[0]);
+		blended[1] = HardMix (bg[1], fg[1]);
+		blended[2] = HardMix (bg[2], fg[2]);		
+	}		
+	else if (mode == "Difference"){
+		float Difference (float b, float a){
+			return abs(a - b);
+		}		
+		blended[0] = Difference (bg[0], fg[0]);
+		blended[1] = Difference (bg[1], fg[1]);
+		blended[2] = Difference (bg[2], fg[2]);	
+	}
+	else if (mode == "Exclusion"){
+		blended = fg + bg - 2.0 * fg * bg;
+	}	
+	else if (mode == "Subtract"){
+		blended = max(bg - fg, 0.0);
+	}		
+	else if (mode == "Divide"){
+		blended = bg/fg;
+	}		
+	else if (mode == "Hue"){
+		vector hsvbg = transformc ("hsv", bg);
+		vector hsvfg = transformc ("hsv", fg);		
+		blended = color ("hsv", hsvfg[0], hsvbg[1], hsvbg[2]);				
+	}	
+	else if (mode == "Saturation"){
+		vector hsvbg = transformc ("hsv", bg);
+		vector hsvfg = transformc ("hsv", fg);		
+		blended = color ("hsv", hsvbg[0], hsvfg[1], hsvbg[2]);	
+	}			
+	else if (mode == "Color"){
+		vector hsvbg = transformc ("hsv", bg);
+		vector hsvfg = transformc ("hsv", fg);		
+		blended = color ("hsv", hsvfg[0], hsvfg[1], hsvbg[2]);	
+	}		
+	else if (mode == "Value"){
+		vector hsvbg = transformc ("hsv", bg);
+		vector hsvfg = transformc ("hsv", fg);		
+		blended = color ("hsv", hsvbg[0], hsvbg[1], hsvfg[2]);	
+	}	
+	
+	Out = bg*(1.0 - fgA) + blended*fgA;
+	Alpha = bgA*(1.0-fgA) + fgA;
+	
+	// Clamp, to stay within sanity
+	if (Clamp)
+		Out = clamp(Out, 0.0, 1.0);
+}

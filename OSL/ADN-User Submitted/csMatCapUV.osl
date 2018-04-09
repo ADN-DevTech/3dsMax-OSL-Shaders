@@ -1,0 +1,17 @@
+// License: Apache 2.0 License
+// https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+// MapCatUV generator
+// By Changsoo Eun
+
+shader MatcapUV
+[[ string help = "MatCapUV Generator by Changsoo Eun",
+   string label= "MapCatUV",
+   string category = "UVW" ]]
+(
+	output vector UVW = 0.0
+)
+
+{
+	vector cameraSpaceN = transform ("camera", N); 
+	UVW = cameraSpaceN *0.5 + 0.5;
+}

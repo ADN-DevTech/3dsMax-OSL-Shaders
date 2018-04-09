@@ -1,0 +1,20 @@
+// License: Apache 2.0 License
+// https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+// Normal Value
+// csNormal.osl, by Changsoo Eun
+
+shader csNormal
+[[ string help = "Gives a normal value by Changsoo Eun",
+   string label = "Normal",
+   string category = "Scene" ]]
+(
+	string Coordspace = "object" 
+		[[ string widget="popup",
+		   string help = "world, object, cmera, shader, screen, NDC, raster, or an explicitly named coordinate system",
+		   string options="world|object|camera|shader|screen|NDC|raster",
+		   int editable=1 ]],
+	output vector Out = 0.0,
+)
+{
+	Out = transform(Coordspace, N);
+}

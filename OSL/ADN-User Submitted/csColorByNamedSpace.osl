@@ -1,0 +1,21 @@
+// License: Apache 2.0 License
+// https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+// Color by Named Space
+// csColorByNamedSpapce.osl, by Changsoo Eun
+
+shader csColorByColorSpace
+[[ string help = "Generate color by colorspace\nby Changsoo Eun",
+   string label = "Color by Colorspace",
+   string category = "Values" ]]
+(
+	int Colorspace = 1
+  	[[ string widget = "mapper",
+      string options = "rgb:0|hsv(hue, saturation, and value):1|hsl(hue, saturation, and lightness):2|YIQ(for the NTSC television standard):3|XYZ(CIE XYZ coordinates):4|xyY(CIE xyY coordinates):5"]],
+	  
+	vector Value = 0.0, 	   
+	output color Out = 0.0,
+)
+{
+	string colorspaces[6] = {"rgb", "hsv", "hsl", "YIQ", "XYZ", "xyY"};
+	Out = color(colorspaces[Colorspace] , Value[0], Value[1], Value[2]);
+}

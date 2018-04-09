@@ -1,0 +1,20 @@
+// License: Apache 2.0 License
+// https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+// RGB to other colorspaces
+// csRGB2otherspace.osl, by Changsoo Eun
+
+shader csRGB2otherspace
+[[ string help="Convert color(rgb) to other color space values\nby Changsoo Eun", 
+   string label= "RGB to Other (Color)",
+   string category = "Math\Color" ]]
+(
+	color Input = 0.0,
+	int Colorspace = 0
+  	[[ string widget = "mapper",
+      string options = "hsv(hue, saturation, and value):0|hsl(hue, saturation, and lightness):1|YIQ(for the NTSC television standard):2|XYZ(CIE XYZ coordinates):3|xyY(CIE xyY coordinates):4"]],	
+	output vector Values = 0.0,
+)
+{
+	string colorspaces[5] = {"hsv", "hsl", "YIQ", "XYZ", "xyY"};
+	Values = transformc("rgb", colorspaces[Colorspace], Input);
+}
