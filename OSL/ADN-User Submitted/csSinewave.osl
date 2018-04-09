@@ -1,0 +1,26 @@
+// License: Apache 2.0 License
+// https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+// Sine wave function.
+// csSinewave.osl, by Changsoo Eun
+
+shader csSineWave
+[[ string help = "Sine wave function of frames\nby Changsoo Eun",
+   string label= "Sine wave",
+   string category = "Math\Float" ]]
+(
+	int   FrameNumber = 0 [[ string label="Frame Number", int timeValue = 1  ]],
+	float Period = 60.0 [[ string label="Period(Frames)" ]],
+	float Amplitude = 1.0,	
+	float Phase = 0.0[[ string label="Phase(Frames)" ]],
+	int   Squarewave = 0 
+		[[ string widget="checkBox", 
+		string label="Square Wave"]],
+	output float Out = 0.0,
+)
+{
+	if (Squarewave == 0 )
+		Out = sin(radians(((FrameNumber-Phase)*360.0/Period)))*Amplitude;
+	else
+		Out = sign(sin(radians(((FrameNumber-Phase)*360.0/Period)))*Amplitude);
+		
+}
