@@ -1,8 +1,20 @@
 // Randomly place (and alpha-blend) bitmap on top of something else
 // RamdomBitmap.osl by Zap Andersson)
-// Modified: 2018-02-08
+// Modified: 2018-06-26
 // Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+color TextureFetch(string filename, point lp, output float a)
+{
+	color rgb = texture(filename, lp[0], 1.0-lp[1], "alpha", a);
+
+	int channels = 3;
+	gettextureinfo(filename, "channels", channels);
+	if (channels <= 3)  // If there is no alpha...
+		a = 1.0;        // ...use 1.0
+		
+	return rgb;
+}
 
 shader RandomBitmaps
 [[ string help  = "Randomly place (and alpha blend) a set of bitmaps on top of something else",
@@ -85,6 +97,10 @@ shader RandomBitmaps
 		[[ string help="The Rotational randomness." ,
 		   float min = -360.0,
 		   float max =  360.0 ]],	
+	int    RotSteps = 1
+		[[ string help="Number of 'steps' of Rotational randomness. 1 means 'no steps'.<br><br>For example, to rotate something only 0, 90, 180 and 270 degrees, set min rotation to 0, max rotation to 270, and RotSteps to 4." ,
+		   int min = 1,
+		   int max = 360 ]],	
 	vector HSVMin   = vector(0.0, 1.0, 1.0)
 		[[ string help="Hue/Saturation/Value randomness. Start range of hue shift and saturation/value scaling" ,
 		   float min = -2.0,
@@ -176,21 +192,6 @@ shader RandomBitmaps
 				// Scale and rotation randomness
 				point  scr = noise("cell", rndpoint, 1);
 				int    pic = int(noise("cell", rndpoint, 15) * 100) % NumFiles;
-				string filename;
-				
-				if (pic == 0) filename = Filename0; 
-				else if (pic == 1) filename = Filename1; 
-				else if (pic == 2) filename = Filename2; 
-				else if (pic == 3) filename = Filename3; 				
-				else if (pic == 4) filename = Filename4; 
-				else if (pic == 5) filename = Filename5; 
-				else if (pic == 6) filename = Filename6; 
-				else if (pic == 7) filename = Filename7; 				
-				else if (pic == 8) filename = Filename8; 
-				else if (pic == 9) filename = Filename9; 
-				
-				int channels = 3;
-				gettextureinfo(filename, "channels", channels);
 				
 				// XY scaling tweak
 				float sx = 1.0, sy = 1.0;
@@ -198,13 +199,30 @@ shader RandomBitmaps
 				if (PixelScale > 0.0)
 				{
 					int res[2];
-					gettextureinfo(filename, "resolution", res);
+					
+					if (pic == 0) gettextureinfo(Filename0, "resolution", res); 
+					else if (pic == 1) gettextureinfo(Filename1, "resolution", res); 
+					else if (pic == 2) gettextureinfo(Filename2, "resolution", res); 
+					else if (pic == 3) gettextureinfo(Filename3, "resolution", res); 				
+					else if (pic == 4) gettextureinfo(Filename4, "resolution", res); 
+					else if (pic == 5) gettextureinfo(Filename5, "resolution", res); 
+					else if (pic == 6) gettextureinfo(Filename6, "resolution", res); 
+					else if (pic == 7) gettextureinfo(Filename7, "resolution", res); 				
+					else if (pic == 8) gettextureinfo(Filename8, "resolution", res); 
+					else if (pic == 9) gettextureinfo(Filename9, "resolution", res);
+					
 					sx = res[0] / PixelScale;
 					sy = res[1] / PixelScale;
 				}
 								
 				float scaleX = sx * mix(ScaleMin[0], ScaleMax[0], scr[0]);
 				float scaleY = sy * mix(ScaleMin[1], ScaleMax[1], scr[UniformScale?0:1]);
+				
+				if (RotSteps > 1)
+				{
+					scr[2] = floor(scr[2] * RotSteps) / (RotSteps - 1);
+				}
+				
 				float rot    = mix(RotMin, RotMax, scr[2]);
 				
 				lp -= 0.5;
@@ -218,10 +236,16 @@ shader RandomBitmaps
 					color rgb;
 					float a = 1.0;
 					
-					rgb = texture(filename, lp[0], 1.0-lp[1], "alpha", a);														
-
-					if (channels <= 3)  // If there is no alpha...
-						a = 1.0;        // ...use 1.0
+					if (pic == 0) rgb = TextureFetch(Filename0, lp, a); 
+					else if (pic == 1) rgb = TextureFetch(Filename1, lp, a); 
+					else if (pic == 2) rgb = TextureFetch(Filename2, lp, a); 
+					else if (pic == 3) rgb = TextureFetch(Filename3, lp, a); 			
+					else if (pic == 4) rgb = TextureFetch(Filename4, lp, a); 
+					else if (pic == 5) rgb = TextureFetch(Filename5, lp, a); 
+					else if (pic == 6) rgb = TextureFetch(Filename6, lp, a); 
+					else if (pic == 7) rgb = TextureFetch(Filename7, lp, a); 			
+					else if (pic == 8) rgb = TextureFetch(Filename8, lp, a); 
+					else if (pic == 9) rgb = TextureFetch(Filename9, lp, a); 
 					
 					if (a > 0.0)
 					{
