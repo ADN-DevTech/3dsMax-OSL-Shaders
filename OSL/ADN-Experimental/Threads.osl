@@ -1,0 +1,44 @@
+// A simple Threaded Bolt shader
+// Threads.osl, by Zap Andersson
+// Modified: 2018-06-29
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader Threads
+	[[ string help="A simple shader to make threads on a bolt. Apply to a cylinder.", 
+	   string URL ="https://RenderingTips.com" ]]
+(
+	// Inputs
+	float  ThreadWidth = 0.05
+		[[ string help = "The width of a thread, measured in the V texture direction" ]],
+	float  EndV = 0.5
+		[[ string help = "The ending V coordinate for where the thread ends. Above this V value, the output will be that of BaseLevel" ]],
+	float  BaseLevel = 0.0
+		[[ string help = "The output value outside the thread (when V coordinate is above EndV value). If you want the thread to appear cut 'into' the material, this needs to be 1.0. If this value is 0.0, the thread will 'stand out' from the base material."]],	
+	float  ThreadHeight = 1.0
+		[[ string help = "Amplitude of the thread itself" ]],
+	// Outputs
+	output color Out = 0)
+{
+	Out = BaseLevel;
+	
+	if (v < EndV)
+	{
+		float foo = (v) / (EndV);
+		
+		float Revolutions = EndV / ThreadWidth;		
+		
+		// Taper factor (a smoothstep joint)
+		float taper = 1.0 - smoothstep(1.0 - 0.5 / Revolutions, 1.0, foo);
+
+				
+		foo *= Revolutions;
+		foo -= u;
+		
+		// Compute the Thread
+		Out = (sin(foo * 3.1415 * 2.0) + 1.0) * (ThreadHeight/2.0);
+		
+		// Taper the joint
+		Out = mix(BaseLevel, Out, taper);
+	}	
+}
