@@ -1,0 +1,23 @@
+// Toon Width Modifier Shader
+// ToonWidth.osl, by Zap Andersson
+// Modified: 2018-06-28
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader ToonWidth
+	[[ string help="Toon Edge Width based on how close the surface normal (when converted to screen space) is to the given direction.", 
+	   string URL ="http://zapsrenderingtips.blogspot.com" ]]
+(
+	// Inputs
+	vector ThickDirection = vector(-0.6,-0.6,0.0) 
+		[[ string label = "Thick Direction", string help="The closer the Normal - converted to screen space - is to this vector, the thicker the contour" ]],
+	float  Base  = 0.5 [[ string help="The base width" ]],
+	float  Amt   = 0.4 [[ string help="How much the width varies depends on the cloeness to the above screen space normal direction" ]],
+	
+	// Outputs
+	output float Out = 0.0,
+	output float Out2 = 0.0)
+{
+	vector camN = transform("camera", N);
+	Out = Base + Amt * dot(ThickDirection, camN);
+}

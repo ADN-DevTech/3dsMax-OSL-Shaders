@@ -1,0 +1,35 @@
+// A simple Halftone shader
+// Halftone.osl, by Zap Andersson
+// Modified: 2018-06-28
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader HalftoneDots
+	[[ string help="Halftone Dots" ]] 
+(
+	// Inputs
+	vector UVW   = transform("raster", P),
+	vector Scale = vector(8.0,8.0,8.0),
+	float  Angle = 45.0,
+	color  InputValue = 0.5,
+	float  Fuzz = 0.1 [[ float min = 0.0, float max = 2.0 ]],
+	color  BlackDots = 0.0,
+	color  WhiteDots = 1.0,
+	// Outputs
+	output color Out = 0.0
+)
+{
+	vector pos = rotate(UVW, radians(Angle), 0.0, vector(0.0,0.0,1.0));
+	pos = vector(pos[0] / Scale[0], pos[1] / Scale[1], 0.0);
+	if (Scale[0] == 0.0)
+		pos[0] = 0.5;
+	if (Scale[1] == 0.0)
+		pos[1] = 0.5;
+		
+	pos = pos - floor(pos);
+	
+	float dist = 1.0 - (distance(vector(0.5,0.5,0.0), pos) / (sqrt(2.0) / 2.5));	
+	color factor = smoothstep(-Fuzz, 0.0, InputValue - sqrt(dist));
+		
+	Out = mix(BlackDots, WhiteDots, factor);
+}

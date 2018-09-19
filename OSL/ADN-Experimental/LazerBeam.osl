@@ -1,0 +1,63 @@
+
+float endCapTest(vector d1, point r2, vector d2)
+{
+	// Compute point on vector d1 perpendicular to point r2
+	point px = d1 * dot(d1, r2);
+	// The vector to the line
+	vector diff = r2 - px;
+
+	// Point is	hither 
+	if (dot(diff, d2) > 0.0) 
+		return length(diff);
+
+	return 0.0;	
+}
+
+float rayDistance(point r1, vector d1, point r2, vector d2)
+{
+	// Vector perpendicular to both is the connection direction
+	vector n = cross(d1, d2);
+
+	// TODO: Deal with parallell lines
+
+	// Compute closest point, which is ridiculously easy
+	n = normalize(n);
+	float closest = dot(n,(r1-r2));
+	
+	// ...but now we need to deal with the endcaps
+	
+	vector d2n = normalize(d2);
+
+	// Line 2 start point relative line 1 - all we care about	
+	point rr = r2 - r1;
+	
+	float c = endCapTest(d1, rr,     d2n);
+	float d = endCapTest(d1, rr+d2, -d2n);
+	
+	if (c > 0.0) closest = c;
+	if (d > 0.0) closest = d;
+	
+		
+	return closest;
+}
+
+shader FrikkinLazerbeams
+	[[ string help="Fake 3d Laser Lines! ", 
+	   string URL ="http://zapsrenderingtips.blogspot.com" ]]
+(
+	// Inputs
+	point StartPoint = point(0.2,0.5,0.0),
+	point EndPoint   = point(0.8,0.5,0.0),
+	
+	color Color      = color(1,0.02,0.01),
+	
+	// Outputs
+	output color Out = 0.0)
+{
+	// The vec
+	vector delta = EndPoint - StartPoint;
+	
+	float f = rayDistance(P, I, StartPoint, delta);
+		
+	Out = max(0, (Color / (fabs(f * 1.0) + 0.01)) - 0.03);
+}
