@@ -1,6 +1,6 @@
 // Index based Randomizer
 // IdxRndVec.osl, by Zap Andersson
-// Modified: 2018-02-08
+// Modified: 2018-12-10
 // Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
@@ -16,6 +16,7 @@ shader IdxRndVec
 	output vector Out = 0.0
 )
 {
-	float ratio = noise("cell", vector(Idx, Seed, 12)); 
+	// abs() to deal w. the versioning issue w. negative cellnoise values
+	float ratio = noise("cell", vector(abs(Idx), abs(Seed), 12)); 
 	Out = mix(Min, Max, ratio);
 }

@@ -1,0 +1,64 @@
+// Color-Key shader for green/bluescreen 
+// ColorKey.osl, by Zap Andersson
+// Modified: 2019-01-03
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader ColorKey
+	[[ string label = "Color Key", 
+	   string help="<font size=+1><b>Color Key</b></font><br>A simple color key shader for rough green/bluescreen<br>keying. Can do simple edge cutoffs in UV space<br>and apply a garbage mask if needed." ]]
+(
+	// Inputs
+	color Input    = 0.0 
+		[[ string label = "Input Image",
+		   string help  = "Connect the input image you want to key here." ]],
+	color KeyColor = color(0,1,0) 
+		[[ string label = "Key Color",
+		   string help  = "The color to key. Ideally, pick it from the image to be keyed, in the middle of the color range to be keyed." ]],
+	color Mask     = color(1.0 * 1.0)
+		[[ string label = "Mask",
+		   string help  = "Connect any garbage mask here." ]],
+	color Fill     = 0.0
+		[[ string label = "Fill Color",
+		   string help  = "The color to fill out the keyed out area with." ]],		   
+	float Low      = 0.5 
+		[[ string label = "Low Cutoff",
+		   string help  = "The low cutoff of the color difference." ]],
+	float High     = 0.7 
+		[[ string label = "High Cutoff",
+		   string help  = "The high cutoff of the color difference." ]],
+	float Gamma    = 1.0 
+		[[ string label = "Computation Gamma",
+		   string help  = "Tweaks the color range midtones before computing the difference. "
+		                  "Trying different values here and adjusting the High/Low cutoff can yeild a better result. " ]],
+	point UVW      = point(u,v,0)
+		[[ string label = "UV Input",
+		   string help  = "UV Input (defaults to map channel 1)" ]],	
+	float LowU     = 0.0
+		[[ string label = "U Cutoff",
+		   string help  = "Low edge of simple 2d cutoff in U direction" ]],	
+	float HighU    = 1.0
+		[[ string label = "U Cutoff",
+		   string help  = "High edge of simple 2d cutoff in U direction" ]],	
+	float LowV     = 0.0
+		[[ string label = "V Cutoff",
+		   string help  = "Low edge of simple 2d cutoff in V direction" ]],	
+	float HighV    = 1.0
+		[[ string label = "V Cutoff",
+		   string help  = "High edge of simple 2d cutoff in U direction" ]],	
+	// Outputs
+	output color Col = 0.0,
+	output float Key = 0.0,
+)
+{
+	float x = distance(pow(Input, Gamma), pow(KeyColor, Gamma));
+	
+	if (UVW[0] > LowU && UVW[0] < HighU &&
+  	    UVW[1] > LowV && UVW[1] < HighV)
+	{	
+		Key = smoothstep(Low, High, x) * luminance(Mask);
+		Col = Input * Key;
+	}
+	
+	Col = mix(Fill, Input, Key);
+}

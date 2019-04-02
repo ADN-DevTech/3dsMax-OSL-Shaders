@@ -3,7 +3,7 @@
 // very cool random candy cover...
 //
 // Candy.osl, by Zap Andersson
-// Modified: 2018-02-08
+// Modified: 2018-09-25
 // Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
@@ -30,7 +30,7 @@ shader Candy
 	point pnt = UVW / Scale;	
 	float pri = -1;
   
-	// Sandard method for randomization:
+	// Standard method for randomization:
   	// Go through a 3x3x3 grid that we offset
   	for (float x = -1; x <= 1; x++)
 	{
@@ -41,10 +41,10 @@ shader Candy
 				// Point that sources all our randomization
 				// We run these through cell noises to get
 				// random values
-				point rndpoint = pnt + point(x, y, z);				
-				
+				// MAXX-44914 fix: Adds the 0.001 offset and floor()
+				point rndpoint = floor(pnt) + point(x, y, z) + 0.001;				
 				// Compute a center 
-				point dotcenter = floor(rndpoint) + noise("cell", rndpoint, 1);				      
+				point dotcenter = rndpoint + noise("cell", rndpoint, 1);				      
 				float dist      = distance(dotcenter, pnt);
 				// Randomize the priority, all they all look "stacked" in 
 				// the same direction if they overlap

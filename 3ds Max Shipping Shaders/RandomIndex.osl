@@ -1,0 +1,26 @@
+// Random index Generator from number / color
+// RandomIndex.osl, by Changsoo Eun, adapted by Zap Andersson
+// Modified: 2018-12-09
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+// https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader RandomIndex 
+[[ string help  = "Return a random index based on an input number or color",
+   string category = "Switchers",
+   string label = "Random Index by Number/Color" ]]
+(
+	float InputNumber = 1.0
+		[[ string label = "Input Number",
+		   string help  = "number used to initialize a pseudorandom number generator."]],
+	color InputColor = 1.0
+		[[ string label = "Input Color",
+		   string help  = "color used to initialize a pseudorandom number generator."]],			
+	int   Seed  = 1,
+	int Min   = 0,
+	int Max   = 4,
+	output int Out = 0,
+)
+{
+	float ratio = noise("cell", (vector(InputNumber*InputColor[0], Seed*InputColor[1], 11*InputColor[2]))); 
+	Out = int(floor(mix(Min, (Max + 0.99), ratio)));
+}

@@ -1,0 +1,49 @@
+// Simple Gradient Shader with six inputs
+// SimpleGradient.osl, by Zap Andersson
+// Modified: 2019-01-04
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader SimpleGradient
+	[[ string help="A Simple Gradient with 6 inputs.<br>"
+	               "Code can easily be edited to add more.", 
+	   string label = "Simple Gradient" ]]
+(
+	point Input = point(u,v,0),
+
+	float Hardness = 0.0 [[ float min = 0.0, float max = 0.999 ]],
+                         
+#define PAR(x, val, col)   \
+	color x = col         [[ string label = #x " Color Value" ]],         \
+	float x##_Value = val [[ string label = #x " Position" ]], 
+
+	// Add more lines like this if you need more inputs
+	PAR(A, 0.0, color(1,0,0))
+	PAR(B, 0.2, color(1,1,0))
+	PAR(C, 0.4, color(0,1,0))
+	PAR(D, 0.6, color(0,1,1))
+	PAR(E, 0.8, color(0,0,1))
+	PAR(F, 1.0, color(1,0,1))
+	
+	// Inputs
+	output color Out = 0.0)
+{	
+	Out = F;
+	float inValue = Input[0]; // We use X coordinate of point
+
+#define INT(x,y) \
+	if (inValue >= x##_Value && inValue < y##_Value) \
+	{ \
+		float where = (inValue - x##_Value) / (y##_Value - x##_Value); \
+		where = smoothstep(Hardness, 1.0, where); \
+		Out = mix(x, y, where); \
+	} 
+
+	// Add more lines like this if you need more inputs
+	// Note: One line less than the number of inputs	
+	INT(A,B)
+	INT(B,C)
+	INT(C,D)
+	INT(D,E)
+	INT(E,F)
+}

@@ -1,6 +1,6 @@
 // Load a bitmap into OSL (UBER version, with everything built-in)
 // UberBitmap.osl, by Zap Andersson
-// Modified: 2018-04-25
+// Modified: 2018-12-06
 // Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
@@ -9,7 +9,8 @@ shader UberBitmap
 (  
 	int    UVSet = 1 
 		[[ string label="Map Channel",
-		   string help ="The 3ds max Map channel to look up" ]],
+		   string help ="The 3ds max Map channel to look up",
+		   int min = 0, int max = 99 ]],
 	float  Scale = 1.0      
 		[[ string help="The overall Scale. Larger number = bigger." ]],
 	vector Tiling = 1.0     
@@ -30,6 +31,9 @@ shader UberBitmap
   	[[ string widget="filename", 
   	   string label="File name",
   	   string help="The name of the texture to look up" ]], 
+  int    UDIM   = 0
+  	[[ string widget="checkBox", string label="UDIM-compatible lookup",
+  	   string help  ="Modifies the UV coordinate so that UDIM's are looked up similar to the max MultiTile map" ]],  	     	   
   string WrapMode = "periodic"
   	[[ string widget="popup", string options = "default|black|clamp|periodic|mirror",
   	   string label="Wrap Mode",
@@ -76,9 +80,21 @@ shader UberBitmap
 	// Do the transform stuff
 	point p = rotate(UVW - Offset, radians(Rotate), RotCenter, RotCenter + RotAxis) * Tiling / Scale;
 
+	// Default lookup, just use u and inverted v...
+	float ulookup = p[0];
+	float vlookup = 1.0 - p[1];
 	
-	Col  = texture(Filename, p[0], 1.0-p[1], "wrap", WrapMode, "alpha", A);
+	// But for UDIM compatibility and max's idea that 0,0 is in 
+	// lower left corner, we need this juggling of v....
+	if (UDIM)
+	{
+		float vfloor  = floor(p[1]);
+		float vfrac   = p[1] - vfloor;
+		vlookup = vfloor + (1.0 - vfrac);
+	}
 	
+	Col  = texture(Filename, ulookup, vlookup, "wrap", WrapMode, "alpha", A);
+		
 	int channels;
 	gettextureinfo(Filename, "channels", channels);
 	if (channels < 4) // No alpha? Set it to opaque

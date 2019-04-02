@@ -1,0 +1,55 @@
+// Waveform shader
+// Waveform.osl, by Changsoo Eun, adapted by Zap Andersson
+// Modified: 2018-12-13
+// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+// https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader Waveform
+[[ string help = "Various animated Waveforms. The output Wave is the raw value "
+                 "of the waveform, and Col an interpolation between the two colors.",
+   string label= "Waveform (animated)" ]]
+(
+	int    WaveShape   = 0
+  	[[ string widget = "mapper",
+       string options = "sin (signed):0|sin (unsigned):1|square:2|saw up:3|saw down:4|triangle:5|blinkenlights:6",
+	   string label = "Waveform:"]],
+	float  MidPoint    = 0.5
+	[[ string help  = "Adjusts the shape of the wave. Does different adjustments depending on waveform",
+	   float min = 0.0, float max = 1.0 ]],
+	float  Amplitude   = 1.0
+	[[ string help = "The Amplitude of the Flt output" ]],	
+    color  High        = color(1,0,0)
+	[[ string help  = "Color on the Col output when the Wave output is at 1.0", 
+	   string label = "High Color"]],	    
+    color  Low         = 0.0
+	[[ string help  = "Color on the Col output when the Wave output is at 0.0",
+	   string label = "Low Color" ]],	    
+	int    FrameNumber = 0    [[ string label="Frame Number", int timeValue = 1  ]],
+	float  Period      = 60.0 [[ string label="Period (Frames)" ]],
+	float  Phase       = 0.0  [[ string label="Phase (Frames)" ]],
+	output color Col   = 0.0,	  
+	output float Wave  = 0.0,
+)
+{
+	float wavePos  = (FrameNumber - Phase) / Period;
+	float wavePosF = wavePos - floor(wavePos);
+	float power    = pow(10.0, (MidPoint - 0.5) * 2.0);
+	
+	if (WaveShape == 0 )	
+		Wave = pow(sin(wavePos * M_2PI), power);
+	else if (WaveShape == 1 )	
+		Wave = (pow(sin(wavePos * M_2PI) * 0.5 + 0.5, power));
+	else if (WaveShape == 2 )	
+		Wave = wavePosF < MidPoint ? 1.0 : 0.0;
+	else if (WaveShape == 3 )	
+		Wave = pow(wavePosF, power);
+	else if (WaveShape == 4 )	
+		Wave = pow(1.0 - wavePosF, power);
+	else if (WaveShape == 5 )	
+		Wave = wavePosF < MidPoint ? wavePosF / (MidPoint+0.001) : (1.0 - wavePosF) / (1.0 - MidPoint + 0.001);
+	else if (WaveShape == 6 )	
+		Wave = (float)cellnoise(wavePos * 1.0) < MidPoint ? 1.0 : 0.0;
+		
+	Col  = mix(Low, High, Wave);
+	Wave *= Amplitude;
+}

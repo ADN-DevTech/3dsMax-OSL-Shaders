@@ -1,12 +1,12 @@
 // Randomly place (and alpha-blend) bitmap on top of something else
 // RamdomBitmap.osl by Zap Andersson)
-// Modified: 2018-06-26
+// Modified: 2018-12-09
 // Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
 color TextureFetch(string filename, point lp, output float a)
 {
-	color rgb = texture(filename, lp[0], 1.0-lp[1], "alpha", a);
+	color rgb = texture(filename, lp[0], 1.0-lp[1], "alpha", a, "wrap", "clamp");
 
 	int channels = 3;
 	gettextureinfo(filename, "channels", channels);
@@ -75,20 +75,20 @@ shader RandomBitmaps
 		   float min = 0.0,
 		   float max = 1.0 ]], 
 	vector PosRandom = vector(0.5,0.5,0.0)		
-		[[ string help="Position randomness. For large numbers you may have to turn Overlap up, but that costs performance!! Note: the Z value is not used." ]], 
+		[[ string help="Position randomness. For large numbers you may have to turn Overlap up, but impacts performance! Note: the Z value is not used." ]], 
 	vector ScaleMin = vector(1.0, 1.0, 0.0)
-		[[ string help="The scale randomness. For large scales you may have to turn Overlap up, but that costs performance!! Note: the Z value is not used." ,
+		[[ string help="The scale randomness. For large scales you may have to turn Overlap up, but impacts performance! Note: the Z value is not used." ,
 		   float min = 0.0,
 		   float max = 10.0 ]], 
 	vector ScaleMax = vector(1.0, 1.0, 0.0)
-		[[ string help="The scale randomness. For large scales you may have to turn Overlap up, but that costs performance!! Note: the Z value is not used." ,
+		[[ string help="The scale randomness. For large scales you may have to turn Overlap up, but impacts performance! Note: the Z value is not used." ,
 		   float min = 0.0,
 		   float max = 10.0 ]], 	
 	int    UniformScale = 1 
 		[[ string widget="checkBox",
-		   string help="It enabled, U and V scales in sync with each other, if off, they scale independently" ]], 	
+		   string help="If enabled, U and V scales in sync with each other, if off, they scale independently" ]], 	
 	float  PixelScale = 0.0
-		[[ string help="Relates pixels to image size.<ul><li>If zero, each image is considered to be a 1.0 x 1.0 square in UV space.<li>If nonzero, maps that many pixels to a the size of 1.0, so that images are the same size w.r.t. to pixels <i>and</i> retains their aspect ratio.<br/><b>NOTE</b>: Sizes ending up larger than 1.0 will require turning up Overlap, which reduces performance!!</li>" ]],
+		[[ string help="Relates pixels to image size.<ul><li>If zero, each image is considered to be a 1.0 x 1.0 square in UV space.<li>If nonzero, maps that many pixels to a the size of 1.0, so that images are the same size w.r.t. to pixels <i>and</i> retains their aspect ratio.<br/><b>NOTE</b>: Sizes ending up larger than 1.0 will require turning up Overlap, which reduces performance!</li></ul>" ]],
 	float  RotMin   = 0.0
 		[[ string help="The Rotational randomness." ,
 		   float min = -360.0,
@@ -127,19 +127,23 @@ shader RandomBitmaps
 		   float max =   5.0 ]], 			
 	int    Clamp    = 1 
 		[[ string widget = "checkBox",
-		   string help = "Large color tweaks can yield colors outside of the 0-1 range. Its a good idea to clamp those colors to the 0-1 range..." ]],
+		   string help = "Large color tweaks can yield colors outside of the 0-1 range. It's a good idea to clamp those colors to the 0-1 range..." ]],
 	int    AutoGamma   = 1   
 		[[ string widget="checkBox" ]],
 	float  ManualGamma = 1.0 
 		[[ string label="Manual Gamma" ]],	
 	int    OverLap  = 1
-		[[ string help="For very large scales or position shifts, you may see cut-off textures. This means the shader may need to look further into more neighbouring cells. Increasing this reduces performance A LOT so ONLY do this if absolutely necessary!!!",
+		[[ string help="For very large scales or position shifts, you may see cut-off textures. This means the shader may need to look further into more neighbouring cells. Increasing this reduces performance A LOT so ONLY do this if absolutely necessary!",
 		   int min=0, int max=5 ]],
 
 	output color Out = 0.0,
 	output float Alpha = 1.0,
 )
 {
+	// Adjust behaviour based on version
+	int oslversion = 0;
+	getattribute("osl:version", oslversion);
+	
 	int   ix = int(floor(UVW[0]));
 	int   iy = int(floor(UVW[1]));
 	float fx = UVW[0] - ix;
@@ -177,6 +181,14 @@ shader RandomBitmaps
 		{
 			// The point used for all the randomness
 			point rndpoint = point(ix + xx, iy + yy, Seed);
+
+			// Compensate for old cellnoise behaviour			
+			if (oslversion >= 11000)
+			{
+				rndpoint[0] = rndpoint[0] < 0 ? rndpoint[0]-1: rndpoint[0];
+				rndpoint[1] = rndpoint[1] < 0 ? rndpoint[1]-1: rndpoint[1];
+				rndpoint[2] = rndpoint[2] < 0 ? rndpoint[2]-1: rndpoint[2];
+			}
 			
 			// Random pos data
 			point pos = ((noise("cell", rndpoint, 0) - vector(0.5,0.5,0.0)) * vector(PosRandom[0], PosRandom[1], 1.0));
@@ -191,7 +203,7 @@ shader RandomBitmaps
 			{
 				// Scale and rotation randomness
 				point  scr = noise("cell", rndpoint, 1);
-				int    pic = int(noise("cell", rndpoint, 15) * 100) % NumFiles;
+				int    pic = int((float)noise("cell", rndpoint, 15) * 100) % NumFiles;
 				
 				// XY scaling tweak
 				float sx = 1.0, sy = 1.0;
