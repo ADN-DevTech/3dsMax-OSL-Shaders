@@ -1,0 +1,42 @@
+// Switch between Environment and Background
+// EnvBGSwitch.osl, by Zap Andersson
+// Modified: 2019-11-26
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader EnvironmentBackground
+	[[ string help=
+	       "<h3>Environment/Background Switcher</h3> When applied as an environment shader, allows "
+		   "returning different results for the <b>Environment</b> (for reflections and lighting) "
+		   "and the <b>Background</b> (camera rays hitting nothing)",
+	   string label = "Environment/Background Switcher",
+	   string category = "Environment" ]]
+(
+	// Inputs
+	color Background  = color(1,0,0),
+	color Environment = color(0,1,0),
+	// Outputs
+	output color Out = 0.0,
+)
+{
+	string renderer;
+	getattribute("renderer:name", renderer);
+	
+	if (renderer == "3dsmax:hlsl")
+	{
+		// We use the fact that the camera is at the origin
+		// for detecting the environment render stage
+		vector CP = transform("camera", point(0,0,0));		
+		if (CP == 0.0)
+			Out = Environment;
+		else
+			Out = Background;
+	}
+	else
+	{
+		if (raytype("camera"))
+			Out= Background;
+		else
+			Out = Environment;
+	}	
+}

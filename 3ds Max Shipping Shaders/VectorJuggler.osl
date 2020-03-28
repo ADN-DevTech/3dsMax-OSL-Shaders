@@ -1,13 +1,13 @@
 // Vector Channel Juggler Shader
 // VectorJuggler.osl, by Zap Andersson
-// Modified: 2018-02-08
-// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+// Modified: 2019-11-26
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
 shader VectorJuggler
 [[ string help = "A utility to combine or split vector components",
    string label= "Components (vector)",
-   string category = "Math\Vector" ]]
+   string category = "Math Vector" ]]
 (
 	vector Input = 0.0 [[ string label="Input (XYZ)" ]],
 	float  Xi = Input[0]  [[ string label="X" ]],

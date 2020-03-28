@@ -1,13 +1,13 @@
 // MatCap UV shader
 // MatCapUV.osl, by Changsoo Eun, adapted by Zap Andersson
-// Modified: 2018-12-09
-// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+// Modified: 2019-11-26
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 // https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
 shader MatCapUV
 [[ string help = "Generates 'MatCAP' UV coordinates.<br>Connect to a Bitmap Lookup, containing an<br>image of a MatCap material sphere.",
    string label= "UVW MatCap",
-   string category = "UVW" ]]
+   string category = "UVW Coordinates" ]]
 (
 	output vector UVW = 0.0
 )

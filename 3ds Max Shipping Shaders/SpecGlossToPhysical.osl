@@ -1,0 +1,42 @@
+// Converts a spec/gloss workflows "Specular" and "Glossiness" map to 
+// Physical Material parameters
+// SpecGlossToPhysical.osl, by Zap Andersson
+// Modified: 2019-12-17
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader SpecGlosToPhysical
+[[ string help = 
+	"Input the <b>Specular</b> and <b>Glossiness</b><br>"
+	"maps from a Spec/Gloss PBR shader.<p>"
+	"Set the materials <b>Metalness</b> to 0.0 and <b>IOR</b> to <b>50</b>.<br>"
+	"Then Assign outputs <b>Reflectivity</b>, <b>Reflection Color</b><br>"
+	"and <b>Roughness</b> to matching inputs on the material",
+   string label= "Spec/Gloss to Physical",
+   string version = "1.0.0",
+   string category = "Utility" ]]
+(
+	color        In  = color(1.0, 0.5, 0.1) [[ string label = "Specular Map" ]],
+	float        Glossiness = 1.0,
+	int          Fresnel = 1 [[ string widget="checkBox", string label = "Apply Fresnel Effect" ]],
+	output float Reflectivity = 0.0,
+	output color ReflColor = 0.0,
+	output float Roughness = 0.0
+)
+{
+	Roughness = 1.0 - Glossiness;
+	
+	Reflectivity = max(max(In[0],In[1]),In[2]);
+	if (Reflectivity > 0.0)
+		ReflColor = In / Reflectivity;
+
+	if (Fresnel) 
+	{		
+		// Apply a Schlick approximation fresnel function
+		// attenuated by Glossiness (so rough surfaces have
+		// less fresnel effect....)
+		float fres = pow(1-abs(dot(I, N)),5.0) * Glossiness;
+		Reflectivity = mix(Reflectivity, 1.0, fres);
+		ReflColor    = mix(ReflColor, 1.0, fres);
+	}
+}

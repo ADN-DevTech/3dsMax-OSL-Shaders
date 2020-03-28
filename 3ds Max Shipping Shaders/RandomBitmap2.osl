@@ -1,11 +1,14 @@
 // Randomly place (and alpha-blend) bitmap on top of something else
 // RamdomBitmap.osl by Zap Andersson)
-// Modified: 2018-12-09
-// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+// Modified: 2019-11-26
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
 color TextureFetch(string filename, point lp, output float a)
 {
+	if (!strlen(filename))
+		return 0.0;
+	
 	color rgb = texture(filename, lp[0], 1.0-lp[1], "alpha", a, "wrap", "clamp");
 
 	int channels = 3;
@@ -16,58 +19,52 @@ color TextureFetch(string filename, point lp, output float a)
 	return rgb;
 }
 
-shader RandomBitmaps
-[[ string help  = "Randomly place (and alpha blend) a set of bitmaps on top of something else",
+shader RandomBitmaps2
+[[ string help  = "Randomly place (and alpha blend) a set of<br>bitmaps on top of something else",
+   string version = "2.0.0",
    string label = "Randomized Bitmaps" ]]
 (
+	int   Layers   = 4 [[ int min=1, int max=99, int connectable=0, string widget = "null" ]],
+	string Add = "Add File Input" 
+	[[
+		string widget = "max:actionButton", int connectable = 0, string packName = " ",
+		string actionID = "UpdateGenericLayering(1)"
+	]], 
+	string Delete = "Delete File Input"
+	[[
+		string widget = "max:actionButton", int connectable = 0, string packName = " ",
+		string actionID = "UpdateGenericLayering(-1)"
+	]],
+	
 	vector UVW = vector(u,v,0),
+	float  Scale = 1.0 [[ string label = "Overall Scale" ]],
 	color  Input = 0.0
-		[[ string help="The input color on top of which everything else is put. Thia allows cascading multiple RandomBitmap on top of each other easily..." ]], 	
+		[[ string label = "Background RGB", 
+		   string help="The input color on top of which everything else is put. Thia allows cascading multiple RandomBitmap on top of each other easily..." ]], 	
 	float  InputAlpha = 1.0
-		[[ string help="The input alpha on top of which everything else is put. Thia allows cascading multiple RandomBitmap on top of each other easily..." ]], 	
-	int    NumFiles = 1
-		[[ string label = "Number of Files",
-		   int min = 1, int max = 10 ]],
-	string Filename0 = "uv-grid.png" 
-  		[[ string widget="filename", 
-	  	   string label="File name 0",
+		[[ string label = "Background Alpha", 
+		   string help="The input alpha on top of which everything else is put. Thia allows cascading multiple RandomBitmap on top of each other easily..." ]], 	
+#define LAYER(x) \
+	string Filename##x = ""   \
+  		[[ string widget="filename",     \
+	  	   string label="File name " #x, \
 	  	   string help="The name of the bitmap to place randomly" ]], 
-	string Filename1 = "uv-grid.png" 
-  		[[ string widget="filename", 
-	  	   string label="File name 1",
-	  	   string help="The name of the bitmap to place randomly" ]], 
-	string Filename2 = "uv-grid.png" 
-  		[[ string widget="filename", 
-	  	   string label="File name 2",
-	  	   string help="The name of the bitmap to place randomly" ]], 
-	string Filename3 = "uv-grid.png" 
-  		[[ string widget="filename", 
-	  	   string label="File name 3",
-	  	   string help="The name of the bitmap to place randomly" ]], 
-	string Filename4 = "uv-grid.png" 
-  		[[ string widget="filename", 
-	  	   string label="File name 4",
-	  	   string help="The name of the bitmap to place randomly" ]], 
-	string Filename5 = "uv-grid.png" 
-  		[[ string widget="filename", 
-	  	   string label="File name 5",
-	  	   string help="The name of the bitmap to place randomly" ]], 
-	string Filename6 = "uv-grid.png" 
-  		[[ string widget="filename", 
-	  	   string label="File name 6",
-	  	   string help="The name of the bitmap to place randomly" ]], 
-	string Filename7 = "uv-grid.png" 
-  		[[ string widget="filename", 
-	  	   string label="File name 7",
-	  	   string help="The name of the bitmap to place randomly" ]], 
-	string Filename8 = "uv-grid.png" 
-  		[[ string widget="filename", 
-	  	   string label="File name 8",
-	  	   string help="The name of the bitmap to place randomly" ]], 
-	string Filename9 = "uv-grid.png" 
-  		[[ string widget="filename", 
-	  	   string label="File name 9",
-	  	   string help="The name of the bitmap to place randomly" ]], 
+
+	LAYER(0)
+	//====LAYER-BEGIN====
+	LAYER(1)
+	LAYER(2)
+	LAYER(3)
+	LAYER(4)
+	//====LAYER-END====	 
+#undef LAYER	 	   	  	   
+	int    NumFiles = 0
+		[[ string label = "Limit to N Files",
+		   string help  = "By default, all files are used, but for testing purpouses, "
+		                  "one can choose to only use a few of them by setting this "
+		                  "value greater than zero.",
+		   int min = 0, int max = 99 ]],
+
 	int    Seed  = 39
 		[[ string help="The random seed" ]], 
 	vector Probability = vector(1.0, 0.0, 0.1)
@@ -144,10 +141,12 @@ shader RandomBitmaps
 	int oslversion = 0;
 	getattribute("osl:version", oslversion);
 	
-	int   ix = int(floor(UVW[0]));
-	int   iy = int(floor(UVW[1]));
-	float fx = UVW[0] - ix;
-	float fy = UVW[1] - iy;
+	point UVWs = UVW / Scale;
+	
+	int   ix = int(floor(UVWs[0]));
+	int   iy = int(floor(UVWs[1]));
+	float fx = UVWs[0] - ix;
+	float fy = UVWs[1] - iy;
 	
 	float gamma = 1.0;
 	
@@ -174,6 +173,12 @@ shader RandomBitmaps
 	// Start with the output being the input	
 	Out = Input;
 	Alpha = InputAlpha;
+	
+	// The modulo value is number of layers+1
+	int modValue = Layers+1;
+	// Has the user chosen to limit number of files?
+	if (NumFiles > 0 && NumFiles <= Layers)
+		modValue = NumFiles;
 	
 	for (int xx = -OverLap; xx <= OverLap; xx++)
 	{
@@ -203,7 +208,7 @@ shader RandomBitmaps
 			{
 				// Scale and rotation randomness
 				point  scr = noise("cell", rndpoint, 1);
-				int    pic = int((float)noise("cell", rndpoint, 15) * 100) % NumFiles;
+				int    pic = int((float)noise("cell", rndpoint, 15) * 100) % modValue;
 				
 				// XY scaling tweak
 				float sx = 1.0, sy = 1.0;
@@ -211,18 +216,16 @@ shader RandomBitmaps
 				if (PixelScale > 0.0)
 				{
 					int res[2];
-					
+
 					if (pic == 0) gettextureinfo(Filename0, "resolution", res); 
-					else if (pic == 1) gettextureinfo(Filename1, "resolution", res); 
-					else if (pic == 2) gettextureinfo(Filename2, "resolution", res); 
-					else if (pic == 3) gettextureinfo(Filename3, "resolution", res); 				
-					else if (pic == 4) gettextureinfo(Filename4, "resolution", res); 
-					else if (pic == 5) gettextureinfo(Filename5, "resolution", res); 
-					else if (pic == 6) gettextureinfo(Filename6, "resolution", res); 
-					else if (pic == 7) gettextureinfo(Filename7, "resolution", res); 				
-					else if (pic == 8) gettextureinfo(Filename8, "resolution", res); 
-					else if (pic == 9) gettextureinfo(Filename9, "resolution", res);
-					
+#define LAYER(x) else if (pic == x) gettextureinfo(Filename##x, "resolution", res); 
+	//====LAYER-BEGIN====
+	LAYER(1)
+	LAYER(2)
+	LAYER(3)
+	LAYER(4)
+	//====LAYER-END====	 
+#undef LAYER				
 					sx = res[0] / PixelScale;
 					sy = res[1] / PixelScale;
 				}
@@ -249,15 +252,15 @@ shader RandomBitmaps
 					float a = 1.0;
 					
 					if (pic == 0) rgb = TextureFetch(Filename0, lp, a); 
-					else if (pic == 1) rgb = TextureFetch(Filename1, lp, a); 
-					else if (pic == 2) rgb = TextureFetch(Filename2, lp, a); 
-					else if (pic == 3) rgb = TextureFetch(Filename3, lp, a); 			
-					else if (pic == 4) rgb = TextureFetch(Filename4, lp, a); 
-					else if (pic == 5) rgb = TextureFetch(Filename5, lp, a); 
-					else if (pic == 6) rgb = TextureFetch(Filename6, lp, a); 
-					else if (pic == 7) rgb = TextureFetch(Filename7, lp, a); 			
-					else if (pic == 8) rgb = TextureFetch(Filename8, lp, a); 
-					else if (pic == 9) rgb = TextureFetch(Filename9, lp, a); 
+					
+#define LAYER(x) else if (pic == x) rgb = TextureFetch(Filename##x, lp, a); 
+	//====LAYER-BEGIN====
+	LAYER(1)
+	LAYER(2)
+	LAYER(3)
+	LAYER(4)
+	//====LAYER-END====	 
+#undef LAYER
 					
 					if (a > 0.0)
 					{

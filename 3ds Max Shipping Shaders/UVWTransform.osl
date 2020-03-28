@@ -1,13 +1,16 @@
 // An UVW coordinate tranfrormation tool 
 // UVWTransform.osl by Zap Andersson
-// Modified: 2018-02-08
-// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+// Modified: 2019-11-27
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
 shader UVWTransform
-[[ string help  ="UVW Transformation shader. Can scale, tile and rotate UVW coordinates.",
+[[ string help  = 
+		"UVW Transformation shader. Can scale,<br>"
+		"tile and rotate UVW coordinates.",
    string label = "UVW Transform",
-   string category = "UVW" ]]
+   string category = "UVW Coordinates",
+   string version  = "2.0" ]]
 (
 	point  Input = point(u, v, 0) 
 		[[ string label = "Input (UVW)", 
@@ -19,6 +22,22 @@ shader UVWTransform
 		[[ string help="A per-axis dividing scale, to subdivide the values. Larger number = smaller." ]],
 	vector Offset = 0.0
 		[[ string help="Moves the UVW coordinates around" ]],
+	int    Wrap   = 0 
+		[[ string widget = "checkBox",
+		   int connectable = 0,
+		   string help   = "Wrap the resulting coordinates in a 0-1 range" ]],
+
+	// Real world parameters		
+	int    RealWorld = 0 
+		[[ string widget = "checkBox",
+		   int connectable = 0,
+		   string help   = "Enable Real-World Scaling" ]],
+	float  RealWidth  = 0.2 
+		[[ int worldunits=1,
+		   string help = "Real Width of one unit of texture space" ]],		   		
+	float  RealHeight = 0.2 
+		[[ int worldunits=1,
+           string help = "Real Height of one unit of texture space" ]],		   		
 	
 	float  Rotate = 0.0
 		[[ string help="A rotation angle in <i>degrees</i>." ]],,
@@ -32,5 +51,13 @@ shader UVWTransform
 	output point UVW = 0
 )
 {
-	UVW = rotate(Input - Offset, radians(Rotate), RotCenter, RotCenter + RotAxis) * Tiling / Scale;
+	vector worldScale = 1.0;
+	
+	if (RealWorld)
+		worldScale = vector(RealWidth, RealHeight, 1.0);
+	
+	UVW = rotate(Input - Offset, radians(Rotate), RotCenter, RotCenter + RotAxis) * Tiling / worldScale / Scale;
+	
+	if (Wrap)
+		UVW -= floor(UVW);
 }

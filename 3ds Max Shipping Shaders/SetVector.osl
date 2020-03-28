@@ -1,12 +1,12 @@
 // Pass-through shader for debugging, instancing etc.
 // SetVector.osl, by Zap Andersson
-// Modified: 2018-02-08
-// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+// Modified: 2019-12-20
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
 shader SetVector
-[[ string help = "Just gives a vector value.",
-   string label= "Vector",
+[[ string help = "A Vector value passthrough.<br>Can be used to instance one value in many places.",
+   string label= "Vector Value",
    string category = "Values" ]]
 (
 	vector        In  = 0.0 [[ string label = "Vector" ]],

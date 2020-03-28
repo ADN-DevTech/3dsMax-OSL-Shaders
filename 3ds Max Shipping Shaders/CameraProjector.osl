@@ -1,0 +1,138 @@
+// Camera Projector
+// CameraProjector.osl, by Zap Andersson
+// Modified: 2019-12-20
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader CameraProjector
+[[ string label   = "Camera Projection",
+   string help    = "<h3>Camera Projection</h3> Click the 'Pick a Camera' button and choose a camera to project from.",
+   string category = "Projection", 
+   string version = "1.0"
+]]
+(
+	// Inputs
+	
+	string INode = "<Pick Camera>"
+	[[
+		string widget="max:actionButton",
+		string label ="Camera to project from",
+		string actionID = "selectCamera()",
+		int connectable = 0,
+	]],
+	
+	point  Camera = 0 [[ string widget="null", int connectable=0 ]],
+	point  Target = 0 [[ string widget="null", int connectable=0 ]],
+	vector Right  = 0 [[ string widget="null", int connectable=0 ]],
+	float  FOV    = 0 [[ string widget="null", int connectable=0 ]],
+	float  OverScan = 0.0 [[ string label = "OverScan (percent)" ]],
+	vector Aspect = vector(16, 9, 0),
+	vector Up     = vector(0,0,1),
+	
+	int   Backface  = 0
+		[[ string widget = "checkBox", 
+		   string label  = "Project on Back",
+		   int connectable = 0 ]],
+	
+	string Filename = "uv-grid.png" 
+		[[ string widget="filename",
+		   int autopop = 0 ]],
+	
+	int    AutoGamma   = 1   
+  		[[ string widget="checkBox" ]],
+	float  ManualGamma = 1.0 
+  		[[ string label="Manual Gamma" ]],
+	
+	// Outputs
+	output point UV = 0.0,
+	output color Col     = 0.0  [[ string label="Col (RGB)" ]],
+	output float Alpha = 0.0
+)
+{
+	// Default to black
+	Col = 0.0;
+	
+	// Normalized vector from camera to target
+	vector ToTarget = normalize(Target - Camera);
+	
+	// Are we on the backside and backside mode is on? 
+	// Nothing to do here....
+	if (dot(transform("world", N), ToTarget) > 0.0 && Backface == 0)
+		return;
+	
+	// Get the vector pointing to the right.
+	// This needs normalizing since its part of the transform. 
+	vector ToRight  = normalize(Right);
+	
+	// Cross product of the vector to the Right
+	// and the vector to the camera, gives us a vector
+	// pointing to the TOP of the camera. Since
+	// we know the angle here is 90 degrees, no need
+	// to normalize this...
+	vector ToTop    = cross(ToRight, ToTarget);
+
+	// Vector towards the point we are asking about
+	vector ToPoint  = normalize(P - Camera);
+	float  dotTarget = dot(ToTarget, ToPoint);
+
+	// Check that we are in front of the camera and not behind....
+	if (dotTarget > 0.0)
+	{		
+		// Project it to the unit distance	
+		ToPoint /= dotTarget;
+	
+		// Get the projected points, adjusted for aspect ratio	
+		float aspect = Aspect[1] / Aspect[0];
+		float x = dot(ToPoint, ToRight);
+		float y = dot(ToPoint, ToTop) / aspect;
+	
+		float fov = FOV>M_PI?radians(FOV):FOV;
+		
+		// Adjust for FOV
+		float foo = 1.0 / tan(fov / 2);
+		x = x * foo / (1.0 + OverScan / 100.0);
+		y = y * foo / (1.0 + OverScan / 100.0);
+	
+		// Turn into 0-1 range
+		x = (x + 1) / 2;
+		y = (y + 1) / 2;
+			
+		// Turn into UVW's
+		UV[0] = x; 
+		UV[1] = y; 
+		UV[2] = 0.0;	
+		
+		if (UV[0] <= 1.0 && UV[1] <= 1.0 && UV[0] >= 0.0 && UV[1] >= 0.0) 
+		{
+			Alpha = 1.0;
+			Col = texture(Filename, UV[0], 1.0-UV[1], "alpha", Alpha);
+			
+			int channels;
+			gettextureinfo(Filename, "channels", channels);
+			if (channels < 4) // No alpha? Set it to opaque
+			{
+				Alpha = 1.0;			
+			}		
+			
+			// Temporary workaround for color space issues
+			if (AutoGamma)
+			{
+				if (!endswith(Filename, ".exr") &&
+					!endswith(Filename, ".EXR") &&
+					!endswith(Filename, ".hdr") &&
+					!endswith(Filename, ".HDR") &&
+					!endswith(Filename, ".tx")  &&
+					!endswith(Filename, ".TX"))
+				{
+					// Gamma 2.2 for sRGB approx)
+					Col = pow(Col, 2.2);
+				}
+			}
+			else
+			{
+				if (ManualGamma != 1.0)
+					Col = pow(Col, ManualGamma);
+			}
+		}		
+	}	
+}

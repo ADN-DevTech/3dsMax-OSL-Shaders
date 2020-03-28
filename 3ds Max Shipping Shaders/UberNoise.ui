@@ -1,0 +1,588 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>334</width>
+    <height>742</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_4" columnstretch="0,0">
+   <item row="1" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Fractal Noise Setup</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3" columnstretch="2,0,0">
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>Number of Iterations:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="Gain">
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>Iteration Frequency Ratio (Lacunarity):</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Iteration Amplitude Ratio (Gain):</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="Iterations_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="Lacunarity">
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="MaxSDK::QmaxSpinBox" name="Iterations"/>
+      </item>
+      <item row="3" column="2">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="Gain_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="Lacunarity_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0" colspan="3">
+       <widget class="QGroupBox" name="LayerStepFunction">
+        <property name="title">
+         <string>Step Function (per iteration)</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="0" column="2">
+          <widget class="MaxSDK::QmaxDoubleSpinBox" name="LayerLowStep">
+           <property name="visibleDigits">
+            <number>-4</number>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>High:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="LayerLowStep_map">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="5">
+          <widget class="MaxSDK::QmaxDoubleSpinBox" name="LayerHiStep">
+           <property name="visibleDigits">
+            <number>-4</number>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Low:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="6">
+          <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="LayerHiStep_map">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="3">
+       <widget class="QGroupBox" name="LayerDistort">
+        <property name="title">
+         <string>Layer Distortion</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_7">
+         <item row="0" column="4">
+          <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="LayerDistAmount_map">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="MaxSDK::QmaxDoubleSpinBox" name="LayerDistAmount">
+           <property name="visibleDigits">
+            <number>-4</number>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="7">
+          <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="LayerDistScale_map">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="6">
+          <widget class="MaxSDK::QmaxDoubleSpinBox" name="LayerDistRatio">
+           <property name="visibleDigits">
+            <number>-4</number>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_19">
+           <property name="text">
+            <string>Amount:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="5">
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>Scale:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="3" colspan="3">
+          <widget class="QLabel" name="label_20">
+           <property name="text">
+            <string>Scale Raio:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="6">
+          <widget class="MaxSDK::QmaxDoubleSpinBox" name="LayerDistScale">
+           <property name="visibleDigits">
+            <number>-4</number>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="7" rowspan="2">
+          <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="LayerDistRatio_map">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_17">
+        <property name="text">
+         <string>Combination Mode:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1" colspan="2">
+       <widget class="QComboBox" name="Mode">
+        <property name="toolTip">
+         <string>&lt;b&gt;Mode:&lt;/b&gt; The layer combination mode.&lt;br&gt;&lt;br&gt;
+&lt;b&gt;Add&lt;/b&gt; is classic addition. &lt;b&gt;Relative&lt;/b&gt; adds each layer relative to the previous layers contribution. &lt;b&gt;Multiply&lt;/b&gt; is layer-to-layer multiplication.
+
+</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox_4">
+     <property name="title">
+      <string>Input Coordinates</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_8">
+      <item row="1" column="1" colspan="3">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:7pt;&quot;&gt;When nothing is connected, defaults to object space&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="Phase">
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="label_13">
+        <property name="text">
+         <string>Phase:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="Phase_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="3">
+       <widget class="QPushButton" name="UVW_map">
+        <property name="text">
+         <string>PushButton</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>Input (UVW):</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="title">
+      <string>Noise Settings</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_5" columnstretch="2,0,0,0">
+      <item row="1" column="1">
+       <widget class="QLabel" name="label_14">
+        <property name="text">
+         <string>Worley Power:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_16">
+        <property name="text">
+         <string>Noise Type:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="3">
+       <widget class="QComboBox" name="Type">
+        <property name="toolTip">
+         <string>&lt;b&gt;Type&lt;/b&gt;: Select the type of noise.&lt;br&gt;
+Allows multiple types of noise. Note that the &lt;b&gt;Worley Power&lt;/b&gt; and &lt;b&gt;Worley Jitter&lt;/b&gt; parameters only apply to the various flavors of Worley noise.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="3">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="WorleyJitter_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="WorleyPower">
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="WorleyJitter">
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLabel" name="label_18">
+        <property name="text">
+         <string>Worley Jitter:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="WorleyPower_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="Scale">
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="3">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="Scale_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>Base Wavelength (Scale):</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Output</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_6">
+      <item row="2" column="0" colspan="5">
+       <widget class="QGroupBox" name="OutputStepFunction">
+        <property name="title">
+         <string>Step Function (output)</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="2">
+          <widget class="MaxSDK::QmaxDoubleSpinBox" name="OutputLowStep">
+           <property name="visibleDigits">
+            <number>-4</number>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Low:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>High:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="OutputLowStep_map">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="5">
+          <widget class="MaxSDK::QmaxDoubleSpinBox" name="OutputHiStep">
+           <property name="visibleDigits">
+            <number>-4</number>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="6">
+          <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="OutputHiStep_map">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="MaxSDK::QMaxColorSwatch" name="B">
+        <property name="useAlpha">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2" rowspan="2" colspan="3">
+       <widget class="QPushButton" name="A_map">
+        <property name="text">
+         <string>PushButton</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="2" colspan="3">
+       <widget class="QPushButton" name="B_map">
+        <property name="text">
+         <string>PushButton</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QCheckBox" name="Normalize">
+        <property name="text">
+         <string>Normalize</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="label_15">
+        <property name="text">
+         <string>Final Amplitude:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="Amplitude_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="Amplitude">
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="MaxSDK::QMaxColorSwatch" name="A">
+        <property name="useAlpha">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_11">
+        <property name="text">
+         <string>Color A:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_21">
+        <property name="text">
+         <string>Color B:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MaxSDK::QmaxSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header location="global">Qt/QmaxSpinBox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MaxSDK::QMaxColorSwatch</class>
+   <extends>QWidget</extends>
+   <header location="global">Qt/QMaxColorSwatch.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MaxSDK::QmaxDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header location="global">Qt/QmaxSpinBox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MaxSDK::UI::QmaxTexmapToolbutton</class>
+   <extends>QToolButton</extends>
+   <header>QmaxTexmapToolbutton.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

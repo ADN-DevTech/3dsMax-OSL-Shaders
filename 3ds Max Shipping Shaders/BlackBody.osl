@@ -1,11 +1,13 @@
 // Blackbody Color Shader
 // Blackbody.osl, by Zap Andersson
-// Modified: 2018-12-09
-// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+// Modified: 2019-11-25
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
 shader Blackbody
-[[ string help = "Modulates a color between two Kelvin temperatures" ]]
+[[ string help     = "Modulates a color between two Kelvin temperatures",
+   string category = "Utility"
+]]
 (
 	float  Input = u,
 	float  Min   = 0.0     [[ float min = 0.0, float max = 10000.0 ]],

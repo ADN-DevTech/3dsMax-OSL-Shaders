@@ -1,12 +1,12 @@
 // Pass-through shader for debugging, instancing etc.
 // SetFloat.osl, by Zap Andersson
-// Modified: 2018-02-08
-// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+// Modified: 2019-12-20
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
 shader SetFloat
-[[ string help = "Just gives a float value.",
-   string label= "Float",
+[[ string help = "A Folor value passthrough.<br>Can be used to instance one value in many places.",
+   string label= "Float Value",
    string category = "Values" ]]
 (
 	float        In  = 0.0 [[ string label = "Float" ]],

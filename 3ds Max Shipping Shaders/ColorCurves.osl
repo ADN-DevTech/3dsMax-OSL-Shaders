@@ -1,0 +1,161 @@
+// Color Curves
+// ColorCurves.osl, by Zap Andersson
+// Modified: 2019-12-04
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+float interpolate(float Input, float position[], color values[], int interpolation[], int c)
+{
+	int l = arraylength(position);
+	int last = l-1;
+
+	// Out of range below	
+	if (Input < position[0])
+		return values[0][c];
+
+	// Find the segment	
+	int i;
+	for (i = 0; i < last; i++)
+	{
+		if (Input >= position[i] && Input < position[i+1])
+			break;
+	}
+
+	// Out of range above	
+	if (i >= last)
+		return values[last][c];
+		
+	int i0 = max(0, i-1);
+	int i1 = i;
+	int i2 = i+1;
+	int i3 = min(last, i+2);
+	
+	float delta = position[i2] - position[i1];
+
+	// Get interpolation mode
+	int interp = interpolation[i1];
+
+	// Segment length zero (or less)? Or interpolation mode "constant"? Return start	
+	if (delta <= 0.0  || interp == 0)
+		return values[i1][c];
+
+	// Figure out where in the range we are....	
+	float along = (Input - position[i1]) / delta;
+
+	// Linear interpolation - easy :)
+	if (interp == 1)
+		return mix(values[i1][c], values[i2][c], along);	
+		
+	// Catmull-Rom interpolation
+	if (interp == 2)
+	{
+		// geometry matrix (tension = 0.5):
+		//
+		// [  0.0  1.0  0.0  0.0 ]
+		// [ -0.5  0.0  0.5  0.0 ]
+		// [  1.0 -2.5  2.0 -0.5 ]
+		// [ -0.5  1.5 -1.5  0.5 ]
+
+		float M12 =  1.0;
+		float M21 = -0.5;
+		float M23 =  0.5;
+		float M31 =  1.0;
+		float M32 = -2.5;
+		float M33 =  2.0;
+		float M34 = -0.5;
+		float M41 = -0.5;
+		float M42 =  1.5;
+		float M43 = -1.5;
+		float M44 =  0.5;
+
+		float v0 = values[i0][c];
+		float v1 = values[i1][c];
+		float v2 = values[i2][c];
+		float v3 = values[i3][c];
+
+		float c1 = M12 * v1;
+		float c2 = M21 * v0 + M23 * v2;
+		float c3 = M31 * v0 + M32 * v1 + M33 * v2 + M34 * v3;
+		float c4 = M41 * v0 + M42 * v1 + M43 * v2 + M44 * v3;
+
+		return ((c4 * along + c3) * along + c2) * along + c1;
+	}
+	if (interp == 3)
+	{
+		float i1_tangent = 0;
+		float i2_tangent = 0;
+
+		float i0_interval = position[i1] - position[i0];
+		float i1_interval = position[i2] - position[i1];
+		float i2_interval = position[i3] - position[i2];
+
+		float i0_delta = (values[i1][c] - values[i0][c]) / i0_interval;
+		float i1_delta = (values[i2][c] - values[i1][c]) / i1_interval;		
+		float i2_delta = (values[i3][c] - values[i2][c]) / i2_interval;		
+		
+		// Fritsch-Carlson
+		if (i1 > 0 && (i1_delta * i0_delta) >= 0.0) {
+			i1_tangent = 3.0 * (i0_interval + i1_interval)
+						/ ((2.0 * i1_interval + i0_interval) / i0_delta
+						+ (i1_interval + 2.0  * i0_interval) / i1_delta);
+		}
+
+		if (i2 < (last) && (i2_delta * i1_delta) >= 0.0) {
+						i2_tangent = 3.0 * (i1_interval + i2_interval)
+						/ ((2.0 * i2_interval + i1_interval) / i1_delta
+						+ (i2_interval + 2.0 * i1_interval) / i2_delta);
+		}
+
+		float invint = 1.0 / i1_interval;
+		float si = i1_delta;
+		float ci = (3.0 * si - 2.0 * i1_tangent - i2_tangent) * invint;
+		float di = (i1_tangent + i2_tangent - 2.0 * si) * invint * invint;
+
+		float t = along * i1_interval;
+		float t2 = t * t;
+		float t3 = t * t2;
+		return values[i1][c] + i1_tangent * t + ci * t2 + di * t3;
+	}
+
+	// For any other wierd value, just return linear interpolation
+	return mix(values[i1][c], values[i2][c], along);
+}
+
+
+shader ColorCurves
+[[ string label   = "Curves (color)",
+   string help    = 
+       "<h3>Curves</h3> Transform an input using a arbitrary curves.<br> "
+       "Can be used for gradients or as a color correction tool.<br>"
+       "Each color channel is mapped individually by the curve.",   
+   // string category = "Color Correction",
+   string version = "1.0" ]]
+(
+	// The interpolation/values/positions arrays are solely
+	// for the ramp UI plugins use, if the result array is used
+	int   interpolation[] = { 2, 2, 2 }
+	[[
+		string widget   = "max:ramp0",          // Widget type: Max special "ramp"
+		string interpolation = "interpolation", // name of interpolation (int) array
+		string position = "position",           // Name of the position (float) array 
+		string values   = "colors",             // Name of the value array (float or color)
+		int connectable = 0,
+	]],
+	color colors[]   = {color(0,1,0), color(0.3,0.2,1.0), color(1,0,0)} 
+		[[ string widget="null", int connectable = 0 ]],
+	float position[] = {0.0, 0.5, 1.0} 
+	    [[ string widget="null", int connectable = 0 ]],
+	
+	color Input = u,
+	 
+	// Outputs
+	output color Out = 0.0,
+	output float R = 0.0,
+	output float G = 0.0,
+	output float B = 0.0
+)
+{
+	R = Out[0] = interpolate(Input[0], position, colors, interpolation, 0);
+	G = Out[1] = interpolate(Input[1], position, colors, interpolation, 1);
+	B = Out[2] = interpolate(Input[2], position, colors, interpolation, 2);		
+} 

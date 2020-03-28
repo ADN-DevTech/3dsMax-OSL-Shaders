@@ -1,0 +1,27 @@
+// 4-Point Gradient
+// FourPointGradient.osl, by Zap Andersson
+// Modified: 2019-12-23
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader FourPointGradient
+	[[ string help    = "Four Point Gradient",
+	   string categor = "Textures",
+	   string label   = "4-point Gradient" ]]
+(
+	point UVW = point(u,v,0),
+	color TopLeft     = color(1,0.4,0.4),
+	color TopRight    = color(0.2,1.0,0.6),
+	color BottomLeft  = color(0.2,0.5,0.9),
+	color BottomRight = color(0.7,0.5,0.6),
+	float UCenter     = 0.5 [[ float min=0.0, float max=1.0]],
+	float VCenter     = 0.5 [[ float min=0.0, float max=1.0]],
+	output color Out = 0.0
+)
+{
+	float x = pow(UVW[0], pow(50.0, UCenter - 0.5));
+	float y = pow(UVW[1], pow(50.0, VCenter - 0.5));
+	
+	Out = mix(mix(BottomLeft,  TopLeft,  y),
+	          mix(BottomRight, TopRight, y), x);
+}

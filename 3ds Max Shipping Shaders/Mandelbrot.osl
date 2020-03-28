@@ -1,12 +1,14 @@
 // A simple Mandelbrot set generator shader
 // mandelbrot.osl by Zap Andersson 
-// Modified: 2018-02-08
-// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+// Modified: 2019-11-25
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
 
 shader Mandelbrot
-[[ string help = "A four dimensional mandelbrot/julia set generator" ]]
+[[ string help = "A four dimensional mandelbrot/julia set generator",
+   string category = "Textures"
+]]
 (
     vector UVW    = vector(u,v,0) 
     	[[ string help = "The coordinate to look up. Defaults to the standard UV channel" ]],

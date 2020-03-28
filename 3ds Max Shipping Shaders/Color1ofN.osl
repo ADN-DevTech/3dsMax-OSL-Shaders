@@ -1,0 +1,80 @@
+// Pick one of N inputs
+// Color1ofN.osl, by Zap Andersson
+// Modified: 2019-11-26
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader Float1ofN
+[[ string help = "Pick one of N inputs",
+   string label= "1 of N (color)",
+   string version = "1.0.0",
+   string category = "Switchers" ]]
+(
+	int   Layers   = 4 [[ int min=1, int max=99, int connectable=0, string widget = "null" ]],
+	string Add = "Add Input" 
+	[[
+		string widget = "max:actionButton", int connectable = 0, string packName = " ",
+		string actionID = "UpdateGenericLayering(1)"
+	]], 
+	string Delete = "Delete Input"
+	[[
+		string widget = "max:actionButton", int connectable = 0, string packName = " ",
+		string actionID = "UpdateGenericLayering(-1)"
+	]],
+	
+	int   Index    = 0 
+		[[ string help  = "Pick the index (number) of the input to use. "]],
+#define LAYER(x) color I##x = color(0.5, 0.##x,0.1) [[ string label = "Input " #x ]],
+	LAYER(0)
+	//====LAYER-BEGIN====
+	LAYER(1)
+	LAYER(2)
+	LAYER(3)
+	LAYER(4)
+	//====LAYER-END====	
+#undef LAYER
+	
+	int   StartIdx = 0 
+		[[ string label = "Start Index",
+		   string help  = 
+				"Offsets the input index so that this number will map to the first input. "
+				"E.g. if set to 10, the first input (labeled Input 0) will map to index 10, rather than 0. "
+				"This allows covering different ranges." ]],
+	int   Repeat  = 1 
+		[[ string widget = "checkBox", 
+		   string label = "Repeat the inputs", 
+		   string help  = "Repeat the inputs.<br>"
+				"If off, all indicies outside the range uses the 'Outside Range' input.<br>"
+				"If on, only uses the existing inputs, repeated in a rotating fashion." ]],
+	color Outside = color(0.2,0.0,0.0)
+		[[ string label = "Outside Range",
+		   string help  = 
+				"The value to return when the index falls outside the set of available inputs, "
+				"and the 'Repeat the inputs' option is not checked. "]],
+	
+	output color Out = 0.0
+)
+{
+	int idx = Index - StartIdx;
+	
+	if (Repeat) 
+		idx = idx % (Layers+1);
+
+	if (idx < 0 || idx > Layers)
+	{
+		Out = Outside;
+	}
+	else
+	{
+#define LAYER(X) if (idx == X) { Out = I##X; } else
+	LAYER(0)
+	//====LAYER-BEGIN====
+	LAYER(1)
+	LAYER(2)
+	LAYER(3)
+	LAYER(4)
+	//====LAYER-END====
+	Out = Outside;
+#undef LAYER
+	}
+}

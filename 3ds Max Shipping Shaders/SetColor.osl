@@ -1,12 +1,12 @@
 // Pass-through shader for debugging, instancing etc.
 // SetColor.osl, by Zap Andersson
-// Modified: 2018-02-08
-// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+// Modified: 2020-03-24
+// Copyright 2020 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
 shader SetColor
-[[ string help = "Just gives a color value.",
-   string label= "Color",
+[[ string help = "A Color value passthrough.<br>Can be used to instance one value in many places.",
+   string label= "Color Value",
    string category = "Values" ]]
 (
 	color        In  = color(1.0, 0.5, 0.1) [[ string label = "Color" ]],

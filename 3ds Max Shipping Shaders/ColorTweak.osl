@@ -1,13 +1,14 @@
 // Tweak a color.
 // ColorTweak.osl, by Zap Andersson
-// Modified: 2019-01-04
+// Modified: 2019-11-25
 // Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
 shader ColorTweak
 [[ string help = "Tweaks a color (Levels)",
-   string label= "Tweak/Levels (color)",
-   string category = "Math\Color" ]]
+   string label= "Tweak/Levels",
+   // string category = "Color Correction" 
+]]
 (
 	color Input = 0.0,
 	

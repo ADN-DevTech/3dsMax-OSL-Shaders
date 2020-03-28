@@ -1,0 +1,629 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>307</width>
+    <height>596</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <property name="leftMargin">
+      <number>6</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>6</number>
+     </property>
+     <item row="0" column="0" colspan="3">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>HDRI File:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="MaxSDK::UI::QmaxFileChooser" name="HDRI" native="true">
+       <property name="toolTip">
+        <string>Put a spherical environment HDRI file here. HDRI files can be obtained for free for example at HDRIHaven.com or many other places online.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="HDRI_map">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Alignment</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="1">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="Rotation">
+        <property name="toolTip">
+         <string>Rotation of the environment around the Z axis, in degrees.</string>
+        </property>
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Rotation:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLabel" name="label_18">
+        <property name="text">
+         <string>Tilt Y:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="Height">
+        <property name="toolTip">
+         <string>Allows shifting the &quot;Horizon&quot; of the Environment up or down.</string>
+        </property>
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="TiltX">
+        <property name="toolTip">
+         <string>Tilt of the environment around the X axis, in degrees.</string>
+        </property>
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="TiltY">
+        <property name="toolTip">
+         <string>Tilt of the environment around the Y axis, in degrees.</string>
+        </property>
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_17">
+        <property name="text">
+         <string>Tilt X:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>Height:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1" colspan="3">
+       <widget class="QCheckBox" name="Flip">
+        <property name="toolTip">
+         <string>Historically, 3ds Max has shown spherical environment flipped (mirrored). This shader gives the correct (unflipped) appearance by default, but if the legacy behaviour is desired, check this box.</string>
+        </property>
+        <property name="text">
+         <string>Mirror environment horizontally</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Appearance</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_4">
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Viewport:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Contrast:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="Contrast">
+        <property name="toolTip">
+         <string>Applies a contrast adjustment (effectively, a gamma curve). Can be used to artistically tune the environment.</string>
+        </property>
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="label_13">
+        <property name="text">
+         <string>Tint:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Exposure:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="Viewport">
+        <property name="toolTip">
+         <string>A multiplier for the brightness that only applies to the viewport (and QuickSilver), but not to any other rendering.</string>
+        </property>
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QCheckBox" name="Clamp">
+        <property name="toolTip">
+         <string>Some HDRs have scientifically accurate strength in their brightness. For example, the sun is really many thousands of times brighter than anything else. In some cases, this can cause artifacts (especially in the viewport). Also, no photographer takes a photo in full sunlight without diffusing it with a scrim. This clamping function allows reducing the brightest parts of the photo, to &quot;tame&quot; extreme lighting a bit, for artistic effect, or to reduce artifacts.</string>
+        </property>
+        <property name="text">
+         <string>Clamp</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="Exposure">
+        <property name="toolTip">
+         <string>The brightness (in f-stops) of the environment. Every whole number higher makes the environment twice as bright, every whole number lower makes it half as bright.</string>
+        </property>
+        <property name="stepType">
+         <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+        </property>
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="MaxSDK::QMaxColorSwatch" name="Tint">
+        <property name="toolTip">
+         <string>A color tint of the environment.</string>
+        </property>
+        <property name="useAlpha">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="ClampStops">
+        <property name="toolTip">
+         <string>The clamp level is defined in stops, the actual clamping level doubling for every whole number:
+0 = 1.0
+1 = 2.0
+2 = 4.0
+3 = 8.0
+4 = 16.0
+8 = 32.0
+Etc.</string>
+        </property>
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLabel" name="label_20">
+        <property name="text">
+         <string>Clamp Stops:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="Blur">
+     <property name="toolTip">
+      <string>A high quality HDRI environment is great for reflections, but can appear distracting in the background. This allows to artificially blurring it in the viewport, to reduce visual noise.</string>
+     </property>
+     <property name="title">
+      <string>Background Blur</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_7">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>Amount:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="BlurAmount">
+        <property name="toolTip">
+         <string>The amount of blur.</string>
+        </property>
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label_19">
+        <property name="text">
+         <string>Samples:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="MaxSDK::QmaxSpinBox" name="BlurSamples">
+        <property name="toolTip">
+         <string>The amount of samples taken from the environment to blur it. If the blur looks grainy, turn this up.</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="GroundProjection">
+     <property name="toolTip">
+      <string>When the camera moves around an object inside a spherical environment, the object feels disconnected from the world and seems to be &quot;flying&quot;. Checking this box, allows &quot;flattening&quot; the lower half of the spherical projection to make a &quot;hemisphere&quot;, allowing objects to look like they are locked to a ground plane.</string>
+     </property>
+     <property name="title">
+      <string>Ground Projection</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <property name="topMargin">
+       <number>7</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Position:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="MaxSDK::QmaxWorldSpinBox" name="GroundRadius">
+        <property name="toolTip">
+         <string>The height above the above position of the point from which the flattening projection originates. 
+Should in theory match the height of the tripod that took the spherical panorama in the first place, but is often simply tweaked by eye to look &quot;good&quot;.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="MaxSDK::QmaxPoint3Spinner" name="GroundCenter">
+        <property name="toolTip">
+         <string>The position of the center of the projected ground.</string>
+        </property>
+        <property name="animationKeyBrackets">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>Tripod Height:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="UseBackground">
+     <property name="toolTip">
+      <string>Allows replacing the HDRI in the background with a custom color, or other map.</string>
+     </property>
+     <property name="title">
+      <string>Use Custom Background</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_5">
+      <property name="topMargin">
+       <number>7</number>
+      </property>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>Color:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1" colspan="3">
+       <widget class="QPushButton" name="Background_map">
+        <property name="toolTip">
+         <string>Custom background map.</string>
+        </property>
+        <property name="text">
+         <string>PushButton</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>Multiplier:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="BackgroundMultiplier">
+        <property name="toolTip">
+         <string>Multiplier for the custom background.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="MaxSDK::QMaxColorSwatch" name="Background">
+        <property name="toolTip">
+         <string>Custom background color.</string>
+        </property>
+        <property name="useAlpha">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_11">
+        <property name="text">
+         <string>Map:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="title">
+      <string>Additional Light</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_6">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_15">
+        <property name="text">
+         <string>Multiplier:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="AdditionalLightMul">
+        <property name="toolTip">
+         <string>Multiplier of any additional light added to the environment lighting.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label_16">
+        <property name="text">
+         <string>Color:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="MaxSDK::QMaxColorSwatch" name="AdditionalLight">
+        <property name="toolTip">
+         <string>Use a flat color to simply add a flat amount of extra light.</string>
+        </property>
+        <property name="useAlpha">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_14">
+        <property name="text">
+         <string>Map:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1" colspan="3">
+       <widget class="QPushButton" name="AdditionalLight_map">
+        <property name="toolTip">
+         <string>Use a map to combine this HDRI environment with other lighting effects (like the HDRI Lights map, for example)</string>
+        </property>
+        <property name="text">
+         <string>PushButton</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MaxSDK::QmaxSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header location="global">Qt/QmaxSpinBox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MaxSDK::QMaxColorSwatch</class>
+   <extends>QWidget</extends>
+   <header location="global">Qt/QMaxColorSwatch.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MaxSDK::QmaxDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header location="global">Qt/QmaxSpinBox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MaxSDK::QmaxPoint3Spinner</class>
+   <extends>QWidget</extends>
+   <header location="global">Qt/QMaxMultiSpinner.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MaxSDK::UI::QmaxTexmapToolbutton</class>
+   <extends>QToolButton</extends>
+   <header location="global">Qt/QmaxTexmapToolbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MaxSDK::UI::QmaxFileChooser</class>
+   <extends>QWidget</extends>
+   <header>qmaxfilechooser.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MaxSDK::QmaxWorldSpinBox</class>
+   <extends>QWidget</extends>
+   <header>maxsdk::qmaxworldspinbox.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>HDRI_map</tabstop>
+  <tabstop>Rotation</tabstop>
+  <tabstop>Height</tabstop>
+  <tabstop>TiltX</tabstop>
+  <tabstop>TiltY</tabstop>
+  <tabstop>Flip</tabstop>
+  <tabstop>Exposure</tabstop>
+  <tabstop>Contrast</tabstop>
+  <tabstop>Viewport</tabstop>
+  <tabstop>Clamp</tabstop>
+  <tabstop>ClampStops</tabstop>
+  <tabstop>Blur</tabstop>
+  <tabstop>BlurAmount</tabstop>
+  <tabstop>BlurSamples</tabstop>
+  <tabstop>GroundProjection</tabstop>
+  <tabstop>GroundRadius</tabstop>
+  <tabstop>UseBackground</tabstop>
+  <tabstop>BackgroundMultiplier</tabstop>
+  <tabstop>Background_map</tabstop>
+  <tabstop>AdditionalLightMul</tabstop>
+  <tabstop>AdditionalLight_map</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>Clamp</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>label_20</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>131</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>216</x>
+     <y>255</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Clamp</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ClampStops</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>136</x>
+     <y>250</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>308</x>
+     <y>251</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

@@ -1,11 +1,13 @@
 // Checkerboard Color Shader
 // Checker.osl, by Zap Andersson (from OSL sample)
-// Modified: 2018-02-08
-// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+// Modified: 2019-11-26
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
 shader Checker
-[[ string help = "A simple Checkboard OSL sample shader" ]]
+[[ string help = "A simple Checkboard OSL sample shader",
+   string category = "Textures"
+]]
 (
   point UVW   = vector(u,v,0) 
   	[[ string help="The position to shade. Default to the standard UV space." ]],

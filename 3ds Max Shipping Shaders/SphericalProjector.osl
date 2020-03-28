@@ -1,0 +1,105 @@
+// Spherical Projector
+// SphericalProjector.osl, by Zap Andersson
+// Modified: 2019-11-26
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader SphericalProjector
+[[
+	string label   = "Spherical Projection",
+	string help    = "<h3>Spherical Projection</h3> Simple object based spherical projector. Click the pick button and select an object "
+	                 "(for example a point helper). The texture will be projected spherically in the space of that object. ",
+	string category = "Projection",
+	string version = "1.0"
+]]
+(
+	// Inputs
+	string INode = "<Pick Object>"
+	[[
+		string widget   = "max:actionButton",
+		string label    = "Object to Project",
+		string actionID = "selectObject('Pick some Object')",
+		int connectable = 0,
+	]],
+	vector XAxis    = vector(1,0,0)  [[ int connectable = 0, string widget="null" ]],
+	vector YAxis    = vector(0,1,0)  [[ int connectable = 0, string widget="null" ]],
+	vector ZAxis    = vector(0,0,1)  [[ int connectable = 0, string widget="null" ]],
+	point  Position = point (0,0,0)  [[ int connectable = 0, string widget="null" ]],
+
+#define UVA "Options"	
+
+	int   Backface  = 0
+		[[ string widget = "checkBox", 
+		   string label  = "Project on Back",
+		   string packName = UVA, 
+		   int connectable = 0 ]],
+	
+	string Filename = "uv-grid.png"  
+		[[ string widget="filename",
+		   int autopop = 0 ]],
+
+	int    AutoGamma   = 1   
+  		[[ string widget="checkBox" ]],
+	float  ManualGamma = 1.0 
+  		[[ string label="Manual Gamma" ]],
+		
+	// Outputs
+	output point UV      = 0.0,
+	output color Col     = 0.0  [[ string label="Col (RGB)" ]],
+	output float Alpha   = 0.0
+)
+{
+	point  pnt = transform("world", P) - Position;
+	normal nrm = transform("world", N);
+	
+	float xScale = length(XAxis); xScale *= xScale;
+	float yScale = length(YAxis); yScale *= yScale;
+	float zScale = length(ZAxis); zScale *= zScale;
+
+	int    front = 1;
+	
+	vector D         = normalize(pnt);
+	vector Direction = vector(dot(D,XAxis), dot(D,YAxis), dot(D,ZAxis));
+	
+	// Compute texture UV's in a spherical environment map...
+	UV[0] = atan2(Direction[0],Direction[1]) / (M_PI * 2.0);
+	UV[1] = 0.5 + (asin(Direction[2]) / M_PI);
+	UV[2] = 0.0;
+	
+	if (dot(Direction, nrm) > 0)
+		front = 0;				
+	
+	// If we are on the front side OR BackSide mode is on
+	if (Backface == 1 || front == 1)
+	{	
+		Alpha = 1.0;
+		Col = texture(Filename, UV[0], 1.0-UV[1], "alpha", Alpha, "wrap", "periodic");
+		
+		int channels;
+		gettextureinfo(Filename, "channels", channels);
+		if (channels < 4) // No alpha? Set it to opaque
+		{
+			Alpha = 1.0;			
+		}		
+		
+		// Temporary workaround for color space issues
+		if (AutoGamma)
+		{
+			if (!endswith(Filename, ".exr") &&
+				!endswith(Filename, ".EXR") &&
+				!endswith(Filename, ".hdr") &&
+				!endswith(Filename, ".HDR") &&
+				!endswith(Filename, ".tx")  &&
+				!endswith(Filename, ".TX"))
+			{
+				// Gamma 2.2 for sRGB approx)
+				Col = pow(Col, 2.2);
+			}
+		}
+		else
+		{
+			if (ManualGamma != 1.0)
+				Col = pow(Col, ManualGamma);
+		}
+	}
+}

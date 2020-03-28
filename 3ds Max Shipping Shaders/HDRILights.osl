@@ -1,0 +1,121 @@
+// Use HDRI photos of lights and build a virtual environment map based on those
+// HDRILights.osl, by Zap Andersson
+// Modified: 2019-12-19
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader HDRILights
+[[ string help  = 
+     "<h3>HDRI Lights</h3>" 
+     "Allows using a set of HDR photos<br>"
+     "of light sources as an environment map.",
+   string version  = "1.0.0",
+   string category = "Environment",
+   string label = "HDRI Lights" ]]
+(
+	int   Layers   = 1 [[ int min=1, int max=99, int connectable=0, string widget = "null" ]],
+	string Add = "Add Light" 
+	[[
+		string widget = "max:actionButton", int connectable = 0, string packName = " ",
+		string actionID = "UpdateGenericLayering(1)"
+	]], 
+	string Delete = "Delete Light"
+	[[
+		string widget = "max:actionButton", int connectable = 0, string packName = " ",
+		string actionID = "UpdateGenericLayering(-1)"
+	]],
+
+#define ROW1 "Exposure / Tint "
+#define ROW2 "Size / Aspect "
+#define ROW3 "Angle / Temp (K) "
+
+#define H_ON   string help = "Turn the light on or off."
+#define H_NAM  string help = "The file of the image of the virtual light."
+#define H_EXP  string help = "The exposure, in stops, of the light image."
+#define H_TNT  string help = "Allows tinting the light by a color."
+#define H_SIZ  string help = "Adjust the apparent size of the light."
+#define H_ASP  string help = "Adjust the aspect ratio. Default is the aspect of the image file."
+#define H_ROT  string help = "Rotate the light image."
+#define H_TMP  string help = "Adjust the color temperature. 6500k is neutral (not adjusted)"
+#define H_POS  string help = "The position of the light. Actually used as a direction. The light image is painted on to the environment in this direction."
+#define H_HLP  string help = "Click to create a point helper that drives the Position. When already created, clicking again will select the point helper. This can be used together with the max 'Place Highlight' function to 'paint with light'!"
+                                                  
+#define LAYER(x) \
+	int    LightOn##x     = 1    [[ string label = "LIGHT " #x " ENABLE", string widget = "checkBox", int connecttable = 0, H_ON ]], \
+	string LightName##x   = "HDRILights\reflectiveUmbrella.hdr" [[ string widget="filename", string label = "LIGHT FILE " #x, H_NAM ]],\
+	float  LightExp##x    = 5.0  [[ string label = "Exposure " #x, string packName = ROW1 #x, H_EXP ]], \
+	color  LightTint##x   = 1.0  [[ string label = "Tint "     #x, string packName = ROW1 #x, H_TNT ]], \
+	float  LightSize##x   = 20.0 [[ string label = "Subtend "  #x, string packName = ROW2 #x, H_SIZ ]], \
+	float  LightAspect##x = 1.0  [[ string label = "Aspect "   #x, string packName = ROW2 #x, H_ASP ]], \
+	float  LightRot##x    = 0.0  [[ string label = "Rotate "   #x, string packName = ROW3 #x, float step = 5.0,  H_ROT]],\
+	float  LightTemp##x   = 6500 [[ string label = "Temp (K)"  #x, string packName = ROW3 #x, float step = 10.0, H_TMP]],\
+	point  LightPos##x    = 100  [[ string label = "Pos "      #x, H_POS ]],\
+	string LightHlp##x    = "Create point helper" \
+		[[ string label = "Pos. Helper " #x, string widget="max:actionButton", int connectable = 0, string actionID="pointHelper(" #x ")",\
+		   string help  = "Click to create (or select, if already created) a point helper to help position the virtual light. The direction to the helper is used to position the light", H_HLP ]],
+
+	//====LAYER-BEGIN====
+	LAYER(1)
+	//====LAYER-END====
+#undef LAYER
+
+	color AdditionalLight = 0.0 [[ string label = "Additional Light", 
+		string help = "Allows adding more light contribution from some other shader, for example the HDRI Environment." ]],	
+
+	int   VisibleToCamera = 0 
+		[[ string widget = "checkBox", 
+		   int connectable = 0, 
+		   string label = "Visible to Camera",
+		   string help  = "When enabled, the lights will be visible to the camera. When disabled, the lights will only be seen in reflections and illuminate the scene." ]],
+	int   Test = 0 
+		[[ string widget = "checkBox", 
+		   int connectable = 0, 
+		   string label = "Apply as 2D map for testing",
+		   string help  = "Check this box to see the HDRI in material editor preview. It will no longer work as "
+		                  "an actual environment light, but the result can be seen in 2D for inspection." ]],
+				
+	// Inputs
+	output color Out = 0.0)
+{	
+	vector direction = transform("world", I );
+	vector vec, up, right;
+	float  xc, yc;
+	int    resolution[2];
+	float  aspect;
+	
+	// Generate a 2D coordinate
+	if (Test)
+	{
+		direction[0] =  sin(u * M_2PI) * sin(v * M_PI);
+		direction[1] =  cos(u * M_2PI) * sin(v * M_PI);
+		direction[2] = -cos(v * M_PI);
+	}
+	
+	Out = AdditionalLight;
+	
+	// Not visible to camera?
+	if (VisibleToCamera == 0 && raytype("camera"))
+		return;
+
+#define LAYER(x) \
+	if (LightOn##x && strlen(LightName##x)) {\
+		gettextureinfo(LightName##x, "resolution", resolution); \
+		aspect = float(resolution[1]) / float(resolution[0]) * LightAspect##x;\
+		vec   = normalize(LightPos##x);\
+		right = normalize(cross(vec, vector(0,0,1)));\
+		up    = cross(vec, right);     \
+		right = rotate(right, radians(LightRot##x), 0.0, vec); \
+		up    = rotate(up,    radians(LightRot##x), 0.0, vec); \
+		xc    = dot(direction, right) / sin(radians(LightSize##x)); \
+		yc    = dot(direction, up)    / sin(radians(LightSize##x * aspect)); \
+		if (dot(direction, vec) > 0.0 &&\
+		    abs(xc) < 1.0 &&\
+		    abs(yc) < 1.0) \
+			Out += max(0.0, pow(2.0, LightExp##x) * LightTint##x * texture(LightName##x, (xc+1.0)/2.0, (yc+1.0)/2.0) * normalize(vector(blackbody(LightTemp##x))));\
+	}
+
+	//====LAYER-BEGIN====
+	LAYER(1)
+	//====LAYER-END====
+#undef LAYER
+}

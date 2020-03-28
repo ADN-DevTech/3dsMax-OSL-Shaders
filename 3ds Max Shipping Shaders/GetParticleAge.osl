@@ -1,13 +1,13 @@
 // Shader to get the Particle Age
 // GetParticleAge.osl, by Zap Andersson
-// Modified: 2018-02-08
-// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+// Modified: 2019-11-26
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
 shader GetParticleAge
 [[ string help = "Get the normalized Particle Age",
    string label = "Particle Age",
-   string category = "Scene" ]]
+   string category = "Scene Attributes" ]]
 (
 	float        Scale = 1.0,
 	output float Age   = 1.0

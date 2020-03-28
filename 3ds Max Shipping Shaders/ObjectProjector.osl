@@ -1,0 +1,139 @@
+// Object Projector
+// ObjectProjector.osl, by Zap Andersson
+// Modified: 2019-11-26
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader ObjectProjector
+[[
+	string label   = "Object Projection",
+	string help    = "<h3>Object Projection</h3> Simple object based projector. Click the pick button and select an object "
+	                 "(for example a point helper). The texture will be projected in the space of that object. ",
+	string category = "Projection",
+	string version = "1.0"
+]]
+(
+	// Inputs
+	string INode = "<Pick Object>"
+	[[
+		string widget   = "max:actionButton",
+		string label    = "Object to Project",
+		string actionID = "selectObject('Pick some Object')",
+		int connectable = 0,
+	]],
+	vector XAxis    = vector(1,0,0)  [[ int connectable = 0, string widget="null" ]],
+	vector YAxis    = vector(0,1,0)  [[ int connectable = 0, string widget="null" ]],
+	vector ZAxis    = vector(0,0,1)  [[ int connectable = 0, string widget="null" ]],
+	point  Position = point (0,0,0)  [[ int connectable = 0, string widget="null" ]],
+
+#define UVA "Options"	
+
+	vector Scale    = 1  [[ int connectable = 0, string label = "UVW Scale" ]],						
+
+	string Projection = "XY"
+  	[[ string widget="popup", string options = "XY|YZ|ZX",
+  	   string help="In what space (with respect to the object's space) the texture is projected: (XY, YZ or ZX).",
+  	   string label = UVA,
+  	   int connectable = 0 ]],
+	int   Centered  = 1  
+		[[ string widget = "checkBox", string packName = UVA, int connectable = 0 ]],
+	int   Backface  = 0
+		[[ string widget = "checkBox", 
+		   string label  = "Project on Back",
+		   string packName = UVA, 
+		   int connectable = 0 ]],
+	
+	string Filename = "uv-grid.png"  
+		[[ string widget="filename",
+		   int autopop = 0 ]],
+
+	int    AutoGamma   = 1   
+  		[[ string widget="checkBox" ]],
+	float  ManualGamma = 1.0 
+  		[[ string label="Manual Gamma" ]],
+		
+	// Outputs
+	output point UV      = 0.0,
+	output color Col     = 0.0  [[ string label="Col (RGB)" ]],
+	output float Alpha   = 0.0
+)
+{
+	point  pnt = transform("world", P) - Position;
+	normal nrm = transform("world", N);
+	
+	float xScale = length(XAxis); xScale *= xScale;
+	float yScale = length(YAxis); yScale *= yScale;
+	float zScale = length(ZAxis); zScale *= zScale;
+
+	int    front = 1;
+	
+	if (Projection == "XY")
+	{
+		UV[0] = dot(pnt, XAxis) / xScale;
+		UV[1] = dot(pnt, YAxis) / yScale;
+		UV[2] = dot(pnt, ZAxis) / zScale;
+		
+		if (dot(ZAxis, nrm) < 0)
+			front = 0;
+	}
+	else if (Projection == "YZ")
+	{
+		UV[0] = dot(pnt, YAxis) / yScale;
+		UV[1] = dot(pnt, ZAxis) / zScale;
+		UV[2] = dot(pnt, XAxis) / xScale;
+		
+		if (dot(XAxis, nrm) < 0)
+			front = 0;
+	}
+	else if (Projection == "ZX")
+	{
+		UV[0] = dot(pnt, ZAxis) / zScale;
+		UV[1] = dot(pnt, XAxis) / xScale;
+		UV[2] = dot(pnt, YAxis) / yScale;
+		
+		if (dot(YAxis, nrm) < 0)
+			front = 0;
+	}
+	
+	// If we are on the front side OR BackSide mode is on
+	if (Backface == 1 || front == 1)
+	{	
+		UV /= Scale;
+		
+		if (Centered)
+			UV += vector(0.5, 0.5, 0.0);	
+		
+		if (UV[0] <= 1.0 && UV[1] <= 1.0 && UV[0] >= 0.0 && UV[1] >= 0.0) 
+		{
+			Alpha = 1.0;
+			Col = texture(Filename, UV[0], 1.0-UV[1], "alpha", Alpha);
+			
+			int channels;
+			gettextureinfo(Filename, "channels", channels);
+			if (channels < 4) // No alpha? Set it to opaque
+			{
+				Alpha = 1.0;			
+			}		
+			
+			// Temporary workaround for color space issues
+			if (AutoGamma)
+			{
+				if (!endswith(Filename, ".exr") &&
+					!endswith(Filename, ".EXR") &&
+					!endswith(Filename, ".hdr") &&
+					!endswith(Filename, ".HDR") &&
+					!endswith(Filename, ".tx")  &&
+					!endswith(Filename, ".TX"))
+				{
+					// Gamma 2.2 for sRGB approx)
+					Col = pow(Col, 2.2);
+				}
+			}
+			else
+			{
+				if (ManualGamma != 1.0)
+					Col = pow(Col, ManualGamma);
+			}
+		}
+	}
+}

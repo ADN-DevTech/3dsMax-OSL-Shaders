@@ -1,0 +1,941 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QWidget" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>359</width>
+    <height>732</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string/>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Input:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="MaxSDK::QMaxColorSwatch" name="Input">
+        <property name="useAlpha">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="Overall">
+        <property name="toolTip">
+         <string>Allows you to &quot;fade in&quot; the entire color correction effect. 0.0 is equivalent to turning on Bypass</string>
+        </property>
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QCheckBox" name="Bypass">
+        <property name="toolTip">
+         <string>Bypasses all color correction, turns this map into a pure passthrough</string>
+        </property>
+        <property name="text">
+         <string>Bypass</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="Overall_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2" colspan="3">
+       <widget class="QToolButton" name="Input_map">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>Connect the color to be corrected here</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="label_17">
+        <property name="text">
+         <string>Overall Effect:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1" colspan="4">
+       <widget class="QPushButton" name="Reset">
+        <property name="toolTip">
+         <string>Lost? Confused? Push this big happy button to get back to where you were.....</string>
+        </property>
+        <property name="text">
+         <string>Reset to Default Values</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="HueRange">
+     <property name="toolTip">
+      <string>Allows applying the color correction for a narrow hue range. Useful to, for example, adjust a skin tone or recolor one object in a texture.</string>
+     </property>
+     <property name="title">
+      <string>Apply only to Hue Range</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_5" columnstretch="2,0,0,0,0,0">
+      <item row="1" column="4">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="HueRangeSoftness">
+        <property name="toolTip">
+         <string>Adds a soft falloff to the ends of the Hue Range, so the color correction effect fades out gently.</string>
+        </property>
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLabel" name="label_16">
+        <property name="text">
+         <string>Softness:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="AffectHue_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="MaxSDK::QMaxColorSwatch" name="AffectHue">
+        <property name="toolTip">
+         <string>The base Hue which is compared against.</string>
+        </property>
+        <property name="useAlpha">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLabel" name="label_15">
+        <property name="text">
+         <string>Hue Range Width:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="HueRangeWidth">
+        <property name="toolTip">
+         <string>The Hue range width (in degrees of the color wheel). All hues within this range will be corrected.</string>
+        </property>
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="HueRangeWidth_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="HueRangeSoftness_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_14">
+        <property name="text">
+         <string>Affect Hue:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="ChannelMapping">
+     <property name="toolTip">
+      <string>Allows remapping the color channels. Any channel can use any other channels data.</string>
+     </property>
+     <property name="title">
+      <string>Channel Mapping</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="1">
+       <widget class="QComboBox" name="RedMapping"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Red:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Green</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="GreenMapping"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Blue:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="BlueMapping"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="BrightnessAdjustment">
+     <property name="toolTip">
+      <string>Brightness-adjusting effects</string>
+     </property>
+     <property name="title">
+      <string>Brightness</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_7">
+      <item row="1" column="2">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="Brightness_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="Contrast_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>Contrast:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1" colspan="2">
+       <widget class="QCheckBox" name="InverseGamma">
+        <property name="toolTip">
+         <string>Apply the inverse of the Gamma value</string>
+        </property>
+        <property name="text">
+         <string>Inverse Gamma</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>Brightness:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_21">
+        <property name="text">
+         <string>Lift:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="Lift_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="5">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="Pivot_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="4">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="Gamma">
+        <property name="toolTip">
+         <string>Apply a power function to the Input Color, also known as a Gamma</string>
+        </property>
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="Contrast">
+        <property name="toolTip">
+         <string>Contrast - Scales the Input Color around the Pivot level</string>
+        </property>
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="4">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="Pivot">
+        <property name="toolTip">
+         <string>Pivot - the level around which the Contrast scales the Input Color</string>
+        </property>
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="Brightness">
+        <property name="toolTip">
+         <string>Brightness - a pure multiplier of the Input Color</string>
+        </property>
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="Lift">
+        <property name="toolTip">
+         <string>Lift - &quot;Lifts&quot; the Input color by adding to it</string>
+        </property>
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="5">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="Gamma_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="3">
+       <widget class="QLabel" name="label_23">
+        <property name="text">
+         <string>Gamma</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="QLabel" name="label_22">
+        <property name="text">
+         <string>Pivot:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="5">
+       <widget class="QCheckBox" name="Invert">
+        <property name="toolTip">
+         <string>Invert (turn into a photo negative)</string>
+        </property>
+        <property name="text">
+         <string>Invert (Negative)</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="ColorAdjustment">
+     <property name="title">
+      <string>Color</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="1" column="1">
+       <widget class="MaxSDK::QMaxColorSwatch" name="TintColor">
+        <property name="toolTip">
+         <string>Tint - the Hue and Saturation of this color will be applied based on the Tint Strength</string>
+        </property>
+        <property name="useAlpha">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="HueShift_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>Saturation:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>Tint Strength:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="HueShift">
+        <property name="toolTip">
+         <string>Allows shifting the Hue around the color wheel</string>
+        </property>
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="TintStrength">
+        <property name="toolTip">
+         <string>Defines how stronly the Tint effect is</string>
+        </property>
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="Saturation_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Hue Shift:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="Saturation">
+        <property name="toolTip">
+         <string>Adjust the Saturation</string>
+        </property>
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="TintStrength_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Tint:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="TintColor_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="OutputTint">
+     <property name="toolTip">
+      <string>Allows a Tri-tone adjustment to the Input Color</string>
+     </property>
+     <property name="title">
+      <string>Output Tint</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_4">
+      <item row="1" column="3">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="Midtones_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QLabel" name="label_13">
+        <property name="text">
+         <string>Highlights</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="Highlights_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="MaxSDK::QMaxColorSwatch" name="Shadows">
+        <property name="toolTip">
+         <string>A black Input Color will map to this color</string>
+        </property>
+        <property name="useAlpha">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="MaxSDK::QMaxColorSwatch" name="Highlights">
+        <property name="toolTip">
+         <string>A white Input Color will map to this color</string>
+        </property>
+        <property name="useAlpha">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>Midtones</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="MaxSDK::QMaxColorSwatch" name="Midtones">
+        <property name="toolTip">
+         <string>A medium gray Input Color will map to this color</string>
+        </property>
+        <property name="useAlpha">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_11">
+        <property name="text">
+         <string>Shadows</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="Shadows_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="MidtoneLum">
+        <property name="toolTip">
+         <string>Defines what luminance defines what is considered &quot;medium gray&quot;</string>
+        </property>
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="MidtoneLum_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="Clamp">
+     <property name="toolTip">
+      <string>Allows clamping the Input Color</string>
+     </property>
+     <property name="title">
+      <string>Clamp Result</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_8" columnstretch="1,1,1,1,1,1,0,0,0">
+      <item row="0" column="1" colspan="2">
+       <widget class="QLabel" name="label_24">
+        <property name="text">
+         <string>Low</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="8">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="7">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="ClampHi_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="MaxSDK::UI::QmaxTexmapToolbutton" name="ClampLow_map">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="1" colspan="2">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="ClampLow">
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="MaxSDK::QmaxDoubleSpinBox" name="ClampHi">
+        <property name="visibleDigits">
+         <number>-4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QLabel" name="label_25">
+        <property name="text">
+         <string>High</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MaxSDK::QMaxColorSwatch</class>
+   <extends>QWidget</extends>
+   <header location="global">Qt/QMaxColorSwatch.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MaxSDK::QmaxDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header location="global">Qt/QmaxSpinBox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MaxSDK::UI::QmaxTexmapToolbutton</class>
+   <extends>QToolButton</extends>
+   <header location="global">Qt/QmaxTexmapToolbutton.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>Input_map</tabstop>
+  <tabstop>Bypass</tabstop>
+  <tabstop>Overall</tabstop>
+  <tabstop>Overall_map</tabstop>
+  <tabstop>Reset</tabstop>
+  <tabstop>HueRange</tabstop>
+  <tabstop>AffectHue_map</tabstop>
+  <tabstop>HueRangeWidth</tabstop>
+  <tabstop>HueRangeWidth_map</tabstop>
+  <tabstop>HueRangeSoftness</tabstop>
+  <tabstop>HueRangeSoftness_map</tabstop>
+  <tabstop>ChannelMapping</tabstop>
+  <tabstop>RedMapping</tabstop>
+  <tabstop>GreenMapping</tabstop>
+  <tabstop>BlueMapping</tabstop>
+  <tabstop>BrightnessAdjustment</tabstop>
+  <tabstop>Brightness</tabstop>
+  <tabstop>Brightness_map</tabstop>
+  <tabstop>Contrast</tabstop>
+  <tabstop>Contrast_map</tabstop>
+  <tabstop>Lift</tabstop>
+  <tabstop>Lift_map</tabstop>
+  <tabstop>Pivot</tabstop>
+  <tabstop>Pivot_map</tabstop>
+  <tabstop>InverseGamma</tabstop>
+  <tabstop>Gamma</tabstop>
+  <tabstop>Gamma_map</tabstop>
+  <tabstop>ColorAdjustment</tabstop>
+  <tabstop>HueShift</tabstop>
+  <tabstop>HueShift_map</tabstop>
+  <tabstop>Saturation</tabstop>
+  <tabstop>Saturation_map</tabstop>
+  <tabstop>TintColor_map</tabstop>
+  <tabstop>TintStrength</tabstop>
+  <tabstop>TintStrength_map</tabstop>
+  <tabstop>OutputTint</tabstop>
+  <tabstop>Shadows_map</tabstop>
+  <tabstop>Midtones_map</tabstop>
+  <tabstop>Highlights_map</tabstop>
+  <tabstop>MidtoneLum</tabstop>
+  <tabstop>MidtoneLum_map</tabstop>
+  <tabstop>Clamp</tabstop>
+  <tabstop>ClampLow_map</tabstop>
+  <tabstop>ClampHi_map</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>Bypass</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Overall</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>123</x>
+     <y>60</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>263</x>
+     <y>62</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Bypass</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>label_17</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>141</x>
+     <y>60</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>209</x>
+     <y>62</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Bypass</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>HueRange</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>124</x>
+     <y>61</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>84</x>
+     <y>143</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Bypass</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ChannelMapping</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>134</x>
+     <y>61</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>107</x>
+     <y>265</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Bypass</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ColorAdjustment</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>127</x>
+     <y>61</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>136</x>
+     <y>481</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Bypass</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>OutputTint</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>122</x>
+     <y>60</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>92</x>
+     <y>539</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Bypass</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>BrightnessAdjustment</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>112</x>
+     <y>61</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>54</x>
+     <y>321</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

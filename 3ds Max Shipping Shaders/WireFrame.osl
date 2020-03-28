@@ -1,0 +1,37 @@
+// An wireframe shader that keeps its size in pixel space
+// Wireframe.osl by Zap Andersson
+// Modified: 2019-11-27
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader WireFrame
+[[ string help = "<h3>Wireframe</h3>"
+		"Creates a wireframe that has a fixed width relative to<br>"
+		"rendered pixels with a square every 1x1 unit square in<br>"
+		"UV space. Use with a UVW Map set to 'Face Map'<br>"
+		"to get classic wireframe look." 
+]]
+(
+	// Inputs
+	vector Tiling  = 1.0
+		[[ string help = "Number of wireframe 'squares' per unit square un UV space" ]],
+	float Width   = 1.0 
+		[[ string help = "Width of wireframe, roughly in final rendered pixels." ]],
+	color Space   = 0.0
+		[[ string help = "Color of the space between the wires." ]],
+	color Wire    = 1.0
+		[[ string help = "The color of the wires themselves." ]],
+	// Outputs
+	output color Out = 0.0
+)
+{
+	Out = Space;
+	
+	float x = fmod(u * Tiling[0], 1.0);
+	float y = fmod(v * Tiling[1], 1.0);
+	
+	if (x < filterwidth(x) * Width || y < filterwidth(y) * Width ||
+	    (1 - x) < filterwidth(x) * Width || (1 - y) < filterwidth(y) * Width)
+		Out = Wire;
+	
+}

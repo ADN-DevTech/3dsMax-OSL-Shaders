@@ -1,13 +1,13 @@
 // Get an UVW coordinate from a 3ds max map channel
 // GetUVW.osl, by Zap Andersson
-// Modified: 2018-10-13
-// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+// Modified: 2019-11-26
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
 shader GetUVW     
 [[ string help = "Get an UVW coodinate from a 3ds max map channel",
    string label = "UVW Channel",
-   string category = "UVW" ]]
+   string category = "UVW Coordinates" ]]
 (
 	int UVSet = 1 
 		[[ string label="Map Channel",

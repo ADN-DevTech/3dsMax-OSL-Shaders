@@ -1,13 +1,13 @@
 // Returns the maximum of two floats
 // FloatMax.osl, by Zap Andersson
-// Modified: 2018-02-08
-// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+// Modified: 2019-11-26
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
 shader FloatMax
 [[ string help = "Returns the maximum of two floats",
    string label= "Maximum",
-   string category = "Math\Float" ]]
+   string category = "Math Float" ]]
 (
 	float A = 0.5,
 	float B = 0.5,

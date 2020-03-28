@@ -1,11 +1,14 @@
 // Load a bitmap into OSL (UBER version, with everything built-in)
 // UberBitmap.osl, by Zap Andersson
-// Modified: 2018-12-06
-// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+// Modified: 2020-03-24
+// Copyright 2020 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
-shader UberBitmap
-[[ string help  = "All-in-one shader for loading a bitmap via OpenImageIO.<br>Includes UVW channels and transforms in a monolithic version." ]]
+shader UberBitmap2
+[[ string help  = "All-in-one shader for loading a bitmap via OpenImageIO.<br>Includes UVW channels and transforms in a monolithic version.",
+   string label = "Uber Bitmap",
+   string version = "2.0" 
+]]
 (  
 	int    UVSet = 1 
 		[[ string label="Map Channel",
@@ -17,6 +20,18 @@ shader UberBitmap
 		[[ string help="A per-axis dividing scale, to subdivide the values. Larger number = smaller." ]],
 	vector Offset = 0.0
 		[[ string help="Moves the UVW coordinates around" ]],
+		
+	// Real world parameters		
+	int    RealWorld = 0 
+		[[ string widget = "checkBox",
+		   int connectable = 0,
+		   string help   = "Enable Real-World Scaling" ]],
+	float  RealWidth  = 0.2 
+		[[ int worldunits=1,
+		   string help = "Real Width of one unit of texture space" ]],		   		
+	float  RealHeight = 0.2 
+		[[ int worldunits=1,
+           string help = "Real Height of one unit of texture space" ]],		   				
 	
 	float  Rotate = 0.0
 		[[ string help="A rotation angle in <i>degrees</i>." ]],,
@@ -27,12 +42,24 @@ shader UberBitmap
 		[[ string label = "Rotation Axis",
 		   string help  = "An axis around which the rotation occurs." ]],
   
-  string Filename = "uv-grid.png" 
+  string Filename = "" 
   	[[ string widget="filename", 
   	   string label="File name",
   	   string help="The name of the texture to look up" ]], 
+  	   
+  string Filename_UDIMList = "" 
+  	[[ string widget = "null",
+  	   string label="Viewport UDIM List",
+  	   string help="The list of UDIM items to load into the viewport. If empty, will be deduced from the file system automatically. " ]], 
+  string LoadUDIM = "Load UDIM..." 
+  	[[ string widget="max:actionButton", 
+  	   string actionID="loadUDIM(\"Filename\")",
+  	   string help="Select a set of files to load as an UDIM.",
+  	   int    connectable = 0 ]],   	   
+  	   
   int    UDIM   = 0
   	[[ string widget="checkBox", string label="UDIM-compatible lookup",
+  	   int    connectable = 0,
   	   string help  ="Modifies the UV coordinate so that UDIM's are looked up similar to the max MultiTile map" ]],  	     	   
   string WrapMode = "periodic"
   	[[ string widget="popup", string options = "default|black|clamp|periodic|mirror",
@@ -40,7 +67,7 @@ shader UberBitmap
   	   string help="How the texture wraps: (black, clamp, periodic or mirror)." ]],
  
   int    AutoGamma   = 1   
-  	[[ string widget="checkBox" ]],
+  	[[ string widget="checkBox", int connectable = 0 ]],
   float  ManualGamma = 1.0 
   	[[ string label="Manual Gamma" ]],
     
@@ -53,6 +80,10 @@ shader UberBitmap
   output float Average = 0
 )
 {
+	// Skip empty filenames
+	if (strlen(Filename) == 0)
+		return;
+		
 	point UVW = point(u,v,0);
 
 	// Get UVW channel
@@ -77,8 +108,13 @@ shader UberBitmap
 		UVW[2] = w;
 	}
 
+	vector worldScale = 1.0;
+	
+	if (RealWorld)
+		worldScale = vector(RealWidth, RealHeight, 1.0);
+
 	// Do the transform stuff
-	point p = rotate(UVW - Offset, radians(Rotate), RotCenter, RotCenter + RotAxis) * Tiling / Scale;
+	point p = rotate(UVW - Offset, radians(Rotate), RotCenter, RotCenter + RotAxis) * Tiling / worldScale / Scale;
 
 	// Default lookup, just use u and inverted v...
 	float ulookup = p[0];

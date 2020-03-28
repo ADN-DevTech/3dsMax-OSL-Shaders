@@ -1,60 +1,32 @@
-// Was: 
-//    float sum( vec3 v ) { return v.x+v.y+v.z; }
-// What I did:
-//    This is color, really.
-//    Note you could write this as return dot(col, 1.0);
+// Non-Tiling Texture Shader
+// TextureNoTile.osl, by Zap Andersson
+// Modified: 2020-03-28
+// Copyright 2020 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+// https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+
 float sum( color col ) { return col[0]+col[1]+col[2]; }
 
 
-// Was:
-//    vec3 textureNoTile( in vec2 x, float v )
-// What I did:
-//    Passed in the file name
-//    I refuse to call a vector "x" so I called it UV instead :)
-//    I called the nondescript "v" Offset (since v is a reserved name in OSL)
-//    I also added a scale-factor for the random gradient (fixed at 0.005 
-//    in the GL version), Levelcount and a debug option
-color textureNoTile( string FileName, point UV, float GradientScale, float Offset, float Rescale, int LevelCount, int Debug, int Seed )
+color textureNoTile( string FileName, point UV, float GradientScale, float Offset, float Rescale, float Rotate, int LevelCount, int Debug, int Seed )
 {
-	// Was:
-    //    float k = texture( iChannel1, 0.005*x ).x; // cheap (cache friendly) lookup
-    // What I did:
-    //    Just use noise instead, we are in practice just getting a random value
     float k = noise("uperlin", UV / GradientScale, Seed);
-
-    // Was:    
-    //    vec2 duvdx = dFdx( x );
-    //    vec2 duvdy = dFdx( x );
-    // What I did:
-    //    Removed. Not needed. GL derivatives are deltas, but derivatives
-    //    in OSL is analytical, and fully automatic. You don't need to
-    //    think about it.
-    
     float l = k*LevelCount;
     float i = floor( l );
-    // Was:
-    //     float f = fract( l );
-    // What I did:
-    //     fract doesn't exist, but is actually l - i ...
     float f = l - i;
- 
-    // Was:   
-    //     vec2 offa = sin(vec2(3.0,7.0)*(i+0.0)); // can replace with any other hash
-    //     vec2 offb = sin(vec2(3.0,7.0)*(i+1.0)); // can replace with any other hash
-    // What I did:
-    //     Nonseens GL randomness with sin - replaced with real noise function    
     vector offa = cellnoise(i + 0.0, Seed) * vector(Offset, Offset, 1.0);
     vector offb = cellnoise(i + 1.0, Seed) * vector(Offset, Offset, 1.0);
     float  sca = 1.0 / (1.0 + (offa[2] - 0.5) * Rescale);
     float  scb = 1.0 / (1.0 + (offb[2] - 0.5) * Rescale);
-
-	// Was:
-	//     vec3 cola = textureGrad( iChannel0, x + v*offa, duvdx, duvdy ).xyz;
-    //     vec3 colb = textureGrad( iChannel0, x + v*offb, duvdx, duvdy ).xyz;
-    // What I did:
-    //     Replaced with OSL texture calls, and proper "color" type
-    color cola = texture(FileName, UV[0] * sca + offa[0], 1.0 - (UV[1] * sca + offa[1]), "wrap", "periodic" );
-    color colb = texture(FileName, UV[0] * scb + offb[0], 1.0 - (UV[1] * scb + offb[1]), "wrap", "periodic" );
+    
+    float  rota = offa[2] * Rotate;
+    float  rotb = offa[2] * Rotate;
+    
+    point rotA = rotate(UV, rota, vector(0.5,0.5,0), vector(0.5,0.5,1.0));
+    point rotB = rotate(UV, rotb, vector(0.5,0.5,0), vector(0.5,0.5,1.0));
+    
+    color cola = texture(FileName, rotA[0] * sca + offa[0], 1.0 - (rotA[1] * sca + offa[1]), "wrap", "periodic" );
+    color colb = texture(FileName, rotB[0] * scb + offb[0], 1.0 - (rotB[1] * scb + offb[1]), "wrap", "periodic" );
     
     if (Debug)
     {
@@ -62,7 +34,6 @@ color textureNoTile( string FileName, point UV, float GradientScale, float Offse
     	colb = offb;
     }
     
-    // Look ma - no change :)
     return mix( cola, colb, smoothstep(0.1,0.9,f-0.1*sum(cola-colb)) );
 }
 
@@ -78,11 +49,15 @@ shader NoTile
 	float  GradientScale = 2.0,
 	float  Offset = 1.0,
 	float  Rescale = 0.0,
+	float  Rotate  = 0.0,
 	int    LevelCount = 8,
 	int    Seed = -1,
 	int    Debug   = 0 
 		[[  string widget = "checkBox", 
 			string help = "Shows the regions that are being mixed" ]],
+	int    Bypass = 0 
+		[[  string widget = "checkBox", 
+			string help = "Turns the effect off, to compare" ]],
 	int    AutoGamma   = 1   
   		[[ string widget="checkBox" ]],
 	float  ManualGamma = 1.0 
@@ -92,8 +67,11 @@ shader NoTile
 )
 {
 	int s = Seed;
-	
-	Col = textureNoTile( Filename, Pos, GradientScale, Offset, Rescale, LevelCount, Debug, s );
+
+	if (Bypass)
+		Col = texture(Filename, Pos[0], 1.0 - Pos[1], "wrap", "periodic");	
+	else
+		Col = textureNoTile( Filename, Pos, GradientScale, Offset, Rescale, Rotate, LevelCount, Debug, s );
 	
 	// Temporary workaround for color space issues
 	if (AutoGamma)

@@ -1,11 +1,11 @@
 // Tiles, Bricks and other Patterns
 // SimpleTiles.osl, by Zap Andersson
-// Modified: 2018-12-11
-// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+// Modified: 2019-11-25
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
  
 
-#define PARAM lookup,fluvw+point(xx,yy,0),GapWidth*0.05,Tiling,Edge*0.1,Bump,HitIdx
+#define PARAM lookup,fluvw+point(xx,0,0),GapWidth*0.05,Tiling,Edge*0.1,Bump,HitIdx
 
 // Do a single rectangle		
 int doRect(float loX, float hiX, float loY, float hiY, int Tile, int InIdx, float Radius,
@@ -67,7 +67,11 @@ int doRect(float loX, float hiX, float loY, float hiY, int Tile, int InIdx, floa
 }
 
 shader SimpleTiles
-	[[ string help  = "<font size=+1><b>Simple Tiles</b></font><br>Allows various kinds of Tiling.<br>The Tiling Offset modifies the base parameter of the tiling layout, and can generate different effects. ",
+	[[ string help  = "<font size=+1><b>Simple Tiles</b></font><br>"
+		"Allows various kinds of Tiling. The Tiling Offset<br>"
+		"modifies the base parameter of the tiling layout,<br>" 
+		"and can generate different effects. ",
+       string category = "Textures",
 	   string label = "Simple Tiles" ]]
 (
 	// Inputs
@@ -159,75 +163,74 @@ shader SimpleTiles
 	point fruvw = uvw - fluvw;
 	
 	// Loop over neighbours
-	for (int xx = -Overlap; xx <= Overlap; xx++)
-		for (int yy = -Overlap; yy <= Overlap; yy++)
+	for (int xx = -Overlap; xx <= 0; xx++)
+	{
+		point lookup = uvw - fluvw - point(xx,0,0);
+		int   HitIdx = 0;
+		// Running Bond
+		if (TileMode == 0)
 		{
-			point lookup = uvw - fluvw - point(xx,yy,0);
-			int   HitIdx = 0;
-			// Running Bond
-			if (TileMode == 0)
-			{
-				if (Tile == 0) 
-					Tile = doRect(0.0 ,1.0, 0.0, 0.5, 1, 1, Roundness, PARAM);
-				if (Tile == 0) 
-					Tile = doRect(to, to+1.0, 0.5, 1.0, 2, 2, Roundness, PARAM);
-			}
-			// Stack Bond
-			if (TileMode == 1)
-			{
-				if (Tile == 0) 
-					Tile = doRect(0.0 ,0.5, 0.0, 0.5, 1, 1, Roundness, PARAM);
-				if (Tile == 0) 
-					Tile = doRect(0.0, 0.5, 0.5, 1.0, 2, 2, Roundness, PARAM);
-				if (Tile == 0) 
-					Tile = doRect(0.5 ,1.0, 0.0, 0.5, 2, 3, Roundness, PARAM);
-				if (Tile == 0) 
-					Tile = doRect(0.5, 1.0, 0.5, 1.0, 1, 4, Roundness, PARAM);
-			}
-			// English Bond
-			if (TileMode == 2)
-			{
-				if (Tile == 0) 
-					Tile = doRect(0.0 ,1.0, 0.0, 0.5, 1, 1, Roundness, PARAM);
-				if (Tile == 0) 
-					Tile = doRect(0.0+to2, 0.5+to2, 0.5, 1.0, 2, 2, Roundness, PARAM);
-				if (Tile == 0) 
-					Tile = doRect(0.5+to2, 1.0+to2, 0.5, 1.0, 2, 3, Roundness, PARAM);
-			}
-			// Fine Running Bond
-			if (TileMode == 3)
-			{
-				if (Tile == 0) 
-					Tile = doRect(0.0 ,1.0, 0.0, 0.5, 1, 1, Roundness, PARAM);
-				if (Tile == 0) 
-					Tile = doRect(0.0+to, 0.5+to, 0.5, 0.75, 2, 2, Roundness, PARAM);
-				if (Tile == 0) 
-					Tile = doRect(0.5+to, 1.0+to, 0.5, 0.75, 2, 3, Roundness, PARAM);
-				if (Tile == 0) 
-					Tile = doRect(0.0+to2, 0.5+to2, 0.75, 1.0, 3, 4, Roundness, PARAM);
-				if (Tile == 0) 
-					Tile = doRect(0.5+to2, 1.0+to2, 0.75, 1.0, 3, 5, Roundness, PARAM);
-			}
-			// Twist Box
-			if (TileMode == 4)
-			{
-				if (Tile == 0) 
-					Tile = doRect(0.0, 1.0-to2, 0.0, to2, 1, 1, Roundness, PARAM);
-				if (Tile == 0) 
-					Tile = doRect(to2, 1.0, 1.0-to2, 1.0, 1, 2, Roundness, PARAM);
-				if (Tile == 0) 
-					Tile = doRect(0.0, to2, to2, 1.0, 2, 3, Roundness, PARAM);
-				if (Tile == 0) 
-					Tile = doRect(1.0-to2, 1.0, 0.0, 1.0-to2, 2, 4, Roundness, PARAM);
-				if (Tile == 0) 
-					Tile = doRect(to2, 1.0-to2, to2, 1.0-to2, 3, 5, Roundness, PARAM);
-			}
-			if (HitIdx > 0)
-			{
-				TileIdx = HitIdx;
-				Index = HitIdx + int((float)cellnoise(fluvw+point(xx,yy,0)) * 1024.0);
-			}
+			if (Tile == 0) 
+				Tile = doRect(0.0 ,1.0, 0.0, 0.5, 1, 1, Roundness, PARAM);
+			if (Tile == 0) 
+				Tile = doRect(to, to+1.0, 0.5, 1.0, 2, 2, Roundness, PARAM);
 		}
+		// Stack Bond
+		if (TileMode == 1)
+		{
+			if (Tile == 0) 
+				Tile = doRect(0.0 ,0.5, 0.0, 0.5, 1, 1, Roundness, PARAM);
+			if (Tile == 0) 
+				Tile = doRect(0.0, 0.5, 0.5, 1.0, 2, 2, Roundness, PARAM);
+			if (Tile == 0) 
+				Tile = doRect(0.5 ,1.0, 0.0, 0.5, 2, 3, Roundness, PARAM);
+			if (Tile == 0) 
+				Tile = doRect(0.5, 1.0, 0.5, 1.0, 1, 4, Roundness, PARAM);
+		}
+		// English Bond
+		if (TileMode == 2)
+		{
+			if (Tile == 0) 
+				Tile = doRect(0.0 ,1.0, 0.0, 0.5, 1, 1, Roundness, PARAM);
+			if (Tile == 0) 
+				Tile = doRect(0.0+to2, 0.5+to2, 0.5, 1.0, 2, 2, Roundness, PARAM);
+			if (Tile == 0) 
+				Tile = doRect(0.5+to2, 1.0+to2, 0.5, 1.0, 2, 3, Roundness, PARAM);
+		}
+		// Fine Running Bond
+		if (TileMode == 3)
+		{
+			if (Tile == 0) 
+				Tile = doRect(0.0 ,1.0, 0.0, 0.5, 1, 1, Roundness, PARAM);
+			if (Tile == 0) 
+				Tile = doRect(0.0+to, 0.5+to, 0.5, 0.75, 2, 2, Roundness, PARAM);
+			if (Tile == 0) 
+				Tile = doRect(0.5+to, 1.0+to, 0.5, 0.75, 2, 3, Roundness, PARAM);
+			if (Tile == 0) 
+				Tile = doRect(0.0+to2, 0.5+to2, 0.75, 1.0, 3, 4, Roundness, PARAM);
+			if (Tile == 0) 
+				Tile = doRect(0.5+to2, 1.0+to2, 0.75, 1.0, 3, 5, Roundness, PARAM);
+		}
+		// Twist Box
+		if (TileMode == 4)
+		{
+			if (Tile == 0) 
+				Tile = doRect(0.0, 1.0-to2, 0.0, to2, 1, 1, Roundness, PARAM);
+			if (Tile == 0) 
+				Tile = doRect(to2, 1.0, 1.0-to2, 1.0, 1, 2, Roundness, PARAM);
+			if (Tile == 0) 
+				Tile = doRect(0.0, to2, to2, 1.0, 2, 3, Roundness, PARAM);
+			if (Tile == 0) 
+				Tile = doRect(1.0-to2, 1.0, 0.0, 1.0-to2, 2, 4, Roundness, PARAM);
+			if (Tile == 0) 
+				Tile = doRect(to2, 1.0-to2, to2, 1.0-to2, 3, 5, Roundness, PARAM);
+		}
+		if (HitIdx > 0)
+		{
+			TileIdx = HitIdx;
+			Index = HitIdx + int((float)cellnoise(fluvw+point(xx,0,0)) * 1024.0);
+		}
+	}
 		
 	if (Tile == 1) Col = TileColor1;		
 	if (Tile == 2) Col = TileColor2;

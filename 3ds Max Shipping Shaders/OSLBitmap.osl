@@ -1,12 +1,13 @@
 // Lookup a bitmap bitmap with OSL
 // OSLBitmap.osl, by Zap Andersson
-// Modified: 2018-12-06
-// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+// Modified: 2020-03-24
+// Copyright 2020 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
-shader OSLBitmap
+shader OSLBitmap2
 [[ string help  = "Look up a bitmap from passed in UV coordinates<br/>(through OpenImageIO)",
-   string label = "Bitmap Lookup" ]]
+   string label = "Bitmap Lookup",
+   string version = "2.0" ]]
 (  
   point  Pos   = point(u,v,0) 
   	[[  string label= "UV Coordinate", 
@@ -14,12 +15,22 @@ shader OSLBitmap
   float  Scale  = 1.0
   	[[  string help = "A linear scale factor. For more complex UV manipluation, connect the UVWTransform." ]], 
   
-  string Filename = "uv-grid.png" 
+  string Filename = "" 
   	[[ string widget="filename", 
   	   string label="File name",
   	   string help="The name of the texture to look up" ]], 
+  string Filename_UDIMList = "" 
+  	[[ string widget = "null",
+  	   string label="Viewport UDIM List",
+  	   string help="The list of UDIM items to load into the viewport. If empty, will be deduced from the file system automatically. " ]], 
+  string LoadUDIM = "Load UDIM..." 
+  	[[ string widget="max:actionButton", 
+  	   string actionID="loadUDIM(\"Filename\")",
+  	   string help="Select a set of files to load as an UDIM.",
+  	   int    connectable = 0 ]],   	   
   int    UDIM   = 0
   	[[ string widget="checkBox", string label="UDIM-compatible lookup",
+  	   int connectable = 0,
   	   string help  ="Modifies the UV coordinate so that UDIM's are looked up similar to the max MultiTile map" ]],  	   
   string WrapMode = "periodic"
   	[[ string widget="popup", string options = "default|black|clamp|periodic|mirror",
@@ -27,7 +38,7 @@ shader OSLBitmap
   	   string help="How the texture wraps: (black, clamp, periodic or mirror)." ]],
  
   int    AutoGamma   = 1   
-  	[[ string widget="checkBox" ]],
+  	[[ string widget="checkBox", int connectable=0 ]],
   float  ManualGamma = 1.0 
   	[[ string label="Manual Gamma" ]],
     
@@ -40,6 +51,10 @@ shader OSLBitmap
   output float Average = 0
 )
 {
+	// Skip empty files
+	if (strlen(Filename) == 0)
+		return;
+	
 	point p = Pos  / Scale;
 
 	// Default lookup, just use u and inverted v...

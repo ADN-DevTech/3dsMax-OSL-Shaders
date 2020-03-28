@@ -1,11 +1,12 @@
 // Color-Key shader for green/bluescreen 
 // ColorKey.osl, by Zap Andersson
-// Modified: 2019-01-03
+// Modified: 2019-11-25
 // Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
 shader ColorKey
-	[[ string label = "Color Key", 
+	[[ string label    = "Color Key", 
+       string category = "Compositing",
 	   string help="<font size=+1><b>Color Key</b></font><br>A simple color key shader for rough green/bluescreen<br>keying. Can do simple edge cutoffs in UV space<br>and apply a garbage mask if needed." ]]
 (
 	// Inputs
