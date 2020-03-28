@@ -11,7 +11,7 @@ float sum( color col ) { return col[0]+col[1]+col[2]; }
 color textureNoTile( string FileName, point UV, float GradientScale, float Offset, float Rescale, float Rotate, int LevelCount, int Debug, int Seed )
 {
     float k = noise("uperlin", UV / GradientScale, Seed);
-    float l = k*LevelCount;
+    float l = k*LevelCount + UV[1] / GradientScale;
     float i = floor( l );
     float f = l - i;
     vector offa = cellnoise(i + 0.0, Seed) * vector(Offset, Offset, 1.0);
@@ -20,7 +20,7 @@ color textureNoTile( string FileName, point UV, float GradientScale, float Offse
     float  scb = 1.0 / (1.0 + (offb[2] - 0.5) * Rescale);
     
     float  rota = offa[2] * Rotate;
-    float  rotb = offa[2] * Rotate;
+    float  rotb = offb[2] * Rotate;
     
     point rotA = rotate(UV, rota, vector(0.5,0.5,0), vector(0.5,0.5,1.0));
     point rotB = rotate(UV, rotb, vector(0.5,0.5,0), vector(0.5,0.5,1.0));
