@@ -1,0 +1,6 @@
+-------------  jiWindowBox ver. 2.0   -------------
+---- updated version of JuliusIhle jiWindowBox ----
+
+multi planar object compatibility:
+- use local face coordinate system (Z as normal vector, U, V)
+- tested with RailClone
