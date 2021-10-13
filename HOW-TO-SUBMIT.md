@@ -50,4 +50,5 @@ We suggest that if your shader may need documentation or a "demo", to add files 
 
 One could also consider having PDF or TXT files with written documentation, and if necessary, a scene. However the ideal is that the shader is self-documenting enough with metadata and tooltips so this won't be necessary. But an example image showing what the shader does is always welcome!
 
+
 	
