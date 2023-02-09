@@ -1,11 +1,13 @@
 // Simple Dot-Matrix printing shader
 // By Tristan LaPalme
-// Modified: 2018-03-22
-// Copyright 2018 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+// Modified: 2022-09-19
+// Copyright 2022 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
 //    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
 
 shader DotMatrix
-[[ string help="Dot Matrix Font String Shader" ]]
+[[ string help="Dot Matrix Font String Shader",
+   string category = "Textures" 
+]]
 (
 	vector UVW     = vector(u, v, 0),
 	float  Scale   = 1.0,

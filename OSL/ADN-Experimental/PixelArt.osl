@@ -1,0 +1,75 @@
+// Does EGA-style pixel-art on your screen, you can almost hear the chiptunes!!
+// PixelArt.osl, by Zap Andersson
+// Modified: 2023-02-09
+// Copyright 2023 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/license/LICENSE.txt
+shader PixelArt
+(  
+  float PixelSize = 5, 
+  float ToneInput = u,
+  float ToneCurve = 1.0 [[ float min=0.1, float max=10.0 ]],
+  float ToneOffset = 0.0 [[ float min=-1.0, float max=1.0 ]],
+  float Randomness = 0.0 [[ float min = 0.0, float max = 1.0 ]],
+  color Color1 = color(0),   
+  color Color2 = color(0.25),  
+  color Color3 = color(0.5),  
+  color Color4 = color(1.0),   
+
+  output color Col = 0
+)
+{		
+	point UVW   = transform("raster", P);
+	point p = UVW / PixelSize;
+	
+	int x = (int)mod(p[0],2.0);
+	int y = (int)mod(p[1],2.0);
+
+	int box = (((x%2) ? 1:0) + ((y%2) ? 2:0));
+	
+	int STEPS = 3;
+	float randomness = (-cellnoise(p[0],p[1])) * Randomness;	
+	float ux = (pow(ToneInput + ToneOffset, ToneCurve) + randomness) * STEPS;
+	float ui = floor(ux);
+	float uc = ux - ui; // Fractional part
+	
+	color c1 = Color1;
+	color c2 = Color1;
+	
+	if (ui == 0)
+	{
+		c1 = Color1;
+		c2 = Color2;
+	}
+	else if (ui == 1)
+	{
+		c1 = Color2;
+		c2 = Color3;
+	}
+	else if (ui == 2)
+	{
+		c1 = Color3;
+		c2 = Color4;
+	}
+	else if (ui >= 3)
+	{
+		c1 = Color4;
+		c2 = Color4;
+	}
+	
+	if ( box == 0 )
+	{
+		Col = uc>0.0?c2:c1;
+	} 
+	else if ( box == 3)
+	{
+		Col = uc>0.25?c2:c1;
+	} 
+	else if ( box == 2)
+	{
+		Col = uc>0.5?c2:c1;
+	} 
+	else 
+	{
+		Col = uc>0.75?c2:c1;
+	}
+}
