@@ -1,0 +1,231 @@
+// Alpha-composits a set of layers over each other w. blend modes
+// Composite2.osl, by Zap Andersson & Changsoo Eun
+// Modified: 2019-10-31
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+//    https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+void composite(output color Out, output float Alpha,
+	color BottomRGB, float BottomA,
+	color TopRGB, float TopA,
+	string BlendMode, int Premult)
+{
+	// Put in bottom layer's contribution
+	Out   = BottomRGB * (1.0 - TopA);	
+	Alpha = BottomA   * (1.0 - TopA);
+
+	// Blend mode code courtesy of Changsoo Eun
+	color blended = 0.0;
+	if (BlendMode == "Normal")
+		blended = TopRGB;
+	else if (BlendMode == "Average")
+		blended = (BottomRGB+TopRGB)/2.0;			
+	else if (BlendMode == "Darken")
+		blended = min(BottomRGB, TopRGB);
+	else if (BlendMode == "Multiply")
+		blended = (BottomRGB * TopRGB);
+	else if (BlendMode == "Color Burn"){
+		if (TopRGB == 0.0)
+			blended = TopRGB;
+		else 
+			blended = max(1.0 - (1.0 - BottomRGB) / TopRGB, 0.0);
+	}
+	else if (BlendMode == "Linear Burn")
+		blended = max((BottomRGB + TopRGB - 1.0), color (0.0));
+	else if (BlendMode == "Lighten")
+		blended = max(BottomRGB, TopRGB);
+	else if (BlendMode == "Screen")
+		blended = TopRGB + BottomRGB - TopRGB * BottomRGB;
+	else if (BlendMode == "Color Dodge"){
+		if (TopRGB == color (1.0))
+			blended = color (1.0);
+		else 
+			blended = min(BottomRGB / (1.0 - TopRGB), color (1.0));		
+	}
+	else if (BlendMode == "Linear Dodge")		
+		blended = min((BottomRGB + TopRGB), color (1.0));
+	else if (BlendMode == "Spotlight")		
+		blended = min(2.0 * TopRGB * BottomRGB, 1.0);
+	else if (BlendMode == "Spotlight Blend")		
+		blended = min(TopRGB * BottomRGB + BottomRGB, 1.0);
+	else if (BlendMode == "Overlay"){
+		float BottomRGBl = luminance (BottomRGB);		
+		if (BottomRGBl <= 0.5)
+			blended = (2.0 * BottomRGB * TopRGB);		
+		else
+			blended = (1.0 - 2.0 * (1.0 - TopRGB) * (1.0 - BottomRGB));
+	}
+	else if (BlendMode == "Soft Light"){
+		float TopRGBl = luminance (TopRGB);		
+		if (TopRGBl <= 0.5)
+			blended = BottomRGB * (BottomRGB + 2.0 * TopRGB * (1.0 - BottomRGB));
+		else 
+			blended = BottomRGB + (2.0 * TopRGB - 1.0) * (sqrt(BottomRGB) - BottomRGB);
+	}		
+	else if (BlendMode == "Hard Light"){
+		float TopRGBl = luminance (TopRGB);		
+		if (TopRGBl <= 0.5)
+			blended = 2.0 * TopRGB * BottomRGB;
+		else 
+			blended =  1.0 - 2.0 * (1.0 - TopRGB) * (1.0 - BottomRGB);			
+	}	
+	else if (BlendMode == "Pin Light"){
+		float PinLight (float b, float a){
+			if ((a > 0.5 && a > b) || (a < 0.5 && a < b))
+				return a;
+			else
+				return b;
+		}
+		blended[0] = PinLight (BottomRGB[0], TopRGB[0]);
+		blended[1] = PinLight (BottomRGB[1], TopRGB[1]);
+		blended[2] = PinLight (BottomRGB[2], TopRGB[2]);				
+	}		
+	else if (BlendMode == "Hard Mix"){
+		float HardMix (float b, float a){
+			if ((a + b) <= 1.0)
+				return 0.0;
+			else
+				return 1.0;
+		}		
+		blended[0] = HardMix (BottomRGB[0], TopRGB[0]);
+		blended[1] = HardMix (BottomRGB[1], TopRGB[1]);
+		blended[2] = HardMix (BottomRGB[2], TopRGB[2]);		
+	}		
+	else if (BlendMode == "Difference"){
+		float Difference (float b, float a){
+			return abs(a - b);
+		}		
+		blended[0] = Difference (BottomRGB[0], TopRGB[0]);
+		blended[1] = Difference (BottomRGB[1], TopRGB[1]);
+		blended[2] = Difference (BottomRGB[2], TopRGB[2]);	
+	}
+	else if (BlendMode == "Exclusion"){
+		blended = TopRGB + BottomRGB - 2.0 * TopRGB * BottomRGB;
+	}	
+	else if (BlendMode == "Subtract"){
+		blended = max(BottomRGB - TopRGB, 0.0);
+	}		
+	else if (BlendMode == "Divide"){
+		blended = BottomRGB / TopRGB;
+	}		
+	else if (BlendMode == "Hue"){
+		vector hsvBottomRGB = transformc ("hsv", BottomRGB);
+		vector hsvTopRGB = transformc ("hsv", TopRGB);		
+		blended = color ("hsv", hsvTopRGB[0], hsvBottomRGB[1], hsvBottomRGB[2]);				
+	}	
+	else if (BlendMode == "Saturation"){
+		vector hsvBottomRGB = transformc ("hsv", BottomRGB);
+		vector hsvTopRGB = transformc ("hsv", TopRGB);		
+		blended = color ("hsv", hsvBottomRGB[0], hsvTopRGB[1], hsvBottomRGB[2]);	
+	}			
+	else if (BlendMode == "Color"){
+		vector hsvBottomRGB = transformc ("hsv", BottomRGB);
+		vector hsvTopRGB = transformc ("hsv", TopRGB);		
+		blended = color ("hsv", hsvTopRGB[0], hsvTopRGB[1], hsvBottomRGB[2]);	
+	}		
+	else if (BlendMode == "Value"){
+		vector hsvBottomRGB = transformc ("hsv", BottomRGB);
+		vector hsvTopRGB = transformc ("hsv", TopRGB);		
+		blended = color ("hsv", hsvBottomRGB[0], hsvBottomRGB[1], hsvTopRGB[2]);	
+	}	
+
+	// If premultiplied mode, we assume alpha is already multiplied into
+	// the RGB values of the top layer, and top layer should be added as-is	
+	float topmul = Premult?1.0:TopA;
+	
+	// Put in top layer's contribution
+	Out   += blended * topmul;
+	Alpha += TopA;
+}
+
+shader Composite2
+[[ string help    = "A multi-layered compositing thing",
+   string label   = "Composite",
+   string version = "2.0.0"
+  /* string category = "Math\Color" */]]
+(	
+	int Layers = 1 [[ string widget="null", int connectable = 0  ]],
+	string AddLayer = "Add Layer" 
+	[[
+		string widget = "max:actionButton", string packName = " ", int connectable=0,
+		int widgetWidth=80,
+		string actionID = "UpdateCompositeShader(1)"
+	]],
+	string DelLayer = "Delete Layer" 
+	[[
+		string widget = "max:actionButton", string packName = " ", int connectable=0,
+		int widgetWidth=80,
+		string actionID = "UpdateCompositeShader(-1)"
+	]],
+
+#define LROW "RGB + A LAYER "
+#define OROW "Opac / Mode "
+		
+#define PAR(x) \
+    int   Enable##x = 1 [[ string label = "Enable Layer " #x, string widget = "checkBox", int connectable = 0 ]], \
+	color RGB##x    = 0.5                   \
+		[[ string label = "Layer " #x " RGB",     string packName = LROW #x, int widgetWidth = 90 ]],   \
+	float A##x      = 0.0                   \
+		[[ string label = "Layer " #x " Alpha",   string packName = LROW #x, int widgetWidth = 90, float min=0.0, float max=1.0 ]], \
+	float O##x      = 1.0                   \
+		[[ string label = "Layer " #x " Opacity", string packName = OROW #x, int widgetWidth = 90, float min=0.0, float max=1.0 ]], \
+	string BlendMode##x = "Normal"                 \
+		[[ string widget  = "popup",               \
+		   int    widgetWidth = 80,                \
+		   string help    = "Normal, Average, Darken, Multiply, Color Burn, Linear Burn, Lighten, Screen, Color Dodge, Linear Dodge, Spotlight, Spotlight Blend, Overlay, Hard Light, Soft Light, Pin Light, Hard Mix, Difference, Exclusion, Subtract, Divide, Hue, Saturation, Color, Value", \
+		   string options = "Normal|Average|Darken|Multiply|Color Burn|Linear Burn|Lighten|Screen|Color Dodge|Linear Dodge|Spotlight|Spotlight Blend|Overlay|Hard Light|Soft Light|Pin Light|Hard Mix|Difference|Exclusion|Subtract|Divide|Hue|Saturation|Color|Value",                         \
+		   string label   = "Blend Mode " #x, string packName = OROW #x,  \
+		   int editable   = 0, int connectable=0 ]],          \
+	int   Premult##x  = 0 \
+		[[ string widget="checkBox", string label = "Premultiply Layer " #x , string help = "Assume layer has premultiplied Alpha", int connectable=0 ]], \
+	string Swap##x = " ^ ^ ^     Swap     v v v " [[ string widget="max:actionButton", int connectable=0, string packName = "           Swap " #x, string actionID = "RearrangeCompositeShader " #x " -1", int widgetWidth = 158 ]], 
+		
+	// Instantiate layers		
+	
+	//====PAR-BEGIN====
+	PAR(1)
+	//====PAR-END====
+	
+	// Layer 0 has slightly different defaults and added manually
+    int   Enable0 = 1 [[ string label = "Enable Layer 0", string widget = "checkBox", int connectable = 0 ]], 	
+	color RGB0    = 0.5                   
+		[[ string label = "Layer 0 RGB", string packName   = LROW "0", int widgetWidth = 80  ]],
+	float A0      = 1.0
+		[[ string label = "Layer 0 Alpha", string packName = LROW "0", int widgetWidth = 80, float min=0.0, float max=1.0 ]],
+	float O0      = 1.0
+		[[ string label = "Layer 0 Opacity", string packName = OROW "0", int widgetWidth = 80, float min=0.0, float max=1.0 ]],
+	string BlendMode0 = "Normal"
+		[[ string widget  = "popup",
+		   int widgetWidth = 80,
+		   string help    = "Normal, Average, Darken, Multiply, Color Burn, Linear Burn, Lighten, Screen, Color Dodge, Linear Dodge, Spotlight, Spotlight Blend, Overlay, Hard Light, Soft Light, Pin Light, Hard Mix, Difference, Exclusion, Subtract, Divide, Hue, Saturation, Color, Value", 
+		   string options = "Normal|Average|Darken|Multiply|Color Burn|Linear Burn|Lighten|Screen|Color Dodge|Linear Dodge|Spotlight|Spotlight Blend|Overlay|Hard Light|Soft Light|Pin Light|Hard Mix|Difference|Exclusion|Subtract|Divide|Hue|Saturation|Color|Value",                         
+		   string packName = OROW "0",  
+		   int editable   = 0, int connectable=0 ]],          
+	int   Premult0  = 0 
+		[[ string widget="checkBox", string label = "Premultiply Layer 0", string help = "Assume layer has premultiplied Alpha", int connectable=0 ]], \
+
+	
+	int   Clamp    = 0 
+		[[ string widget="checkBox", string label = "Clamp Result", int connectable=0 ]],
+	
+	output color Out = 0.0,
+	output float Alpha = 1.0,
+)
+{
+	color currentC = RGB0 * Enable0;
+	float currentA = A0 * Enable0;
+	
+	#define USE(x) \
+	if (Enable##x) { \
+		composite(Out, Alpha, currentC, currentA, RGB##x, A##x * O##x, BlendMode##x, Premult##x); \
+		currentC = Out; currentA = Alpha; \
+	}
+
+	//====USE-BEGIN====
+	USE(1)
+	//====USE-END====
+	
+
+	// Clamp, to stay within sanity
+	if (Clamp)
+		Out = clamp(Out, 0.0, 1.0);
+}
