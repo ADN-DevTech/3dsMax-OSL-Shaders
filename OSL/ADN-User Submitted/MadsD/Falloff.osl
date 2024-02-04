@@ -1,0 +1,52 @@
+// Updated by Mads Drøschler 5. November 2020 with a flip switch and some additional grading floats exposed fro flip state.
+
+// Falloff shader
+// Falloff.osl, by Changsoo Eun, adapted by Zap Andersson
+// Modified: 2019-11-26
+// Copyright 2019 Autodesk Inc, All rights reserved. This file is licensed under Apache 2.0 license
+// https://github.com/ADN-DevTech/3dsMax-OSL-Shaders/blob/master/LICENSE.txt
+
+shader Falloff
+[[ string help = "Falloff map, OSL version",
+   string category = "Utility",
+   string label = "Falloff"]]
+(
+	color Face = 0.0,
+	color Away = 1.0,
+	string Coordspace = "camera" 
+		[[ string widget="popup",
+		   string help = "world, object, cmera, shader, screen, NDC, raster, or an explicitly named coordinate system",
+		   string options="world|object|camera|shader|screen|NDC|raster",
+		   int editable=1 ]],
+	vector FalloffDirection = vector (0.0, 0.0, 1.0)	   
+		[[ 	string label = "Falloff Direction",
+			string help = "Chooses the direction of falloff. Z-axis(0, 0, 1) is viewing direction for camera." ]],
+	int Type = 0
+  	[[ 	string widget = "mapper",
+		string help = "Perpendicular/Parallel : Sets the angular falloff ranges between face normals that are perpendicular to the falloff direction and normals that are parallel to the falloff direction. The falloff range is based on a 90-degree change in normal direction. (Default.)     Towards/Away : Sets the angular falloff ranges between face normals that face toward (parallel to) the falloff direction and normals that face away from the falloff direction. The falloff range is based on a 180-degree change in normal direction." ,
+		string options = "Perpendicular/Parallel:0|Towards/Away:1" ]],
+	float Power = 1.0
+	[[ string help = "Adjusts the curve of how the falloff is applied. Higher gives thinner edges",
+		float  min = 0.01, float max=100.0 ]],
+	int Flip = 0[[string widget = "checkBox"]],
+	float hardness = 0[[float min = 0, float max = 1]],
+	
+	float softness = 0.2,
+	output color Out = 0.0,
+	output float MixAmount = 0.0
+)
+{
+	vector normalDir = transform(Coordspace, N);
+	MixAmount = dot (normalDir, FalloffDirection);
+	if (Power != 1.0)
+		MixAmount = 1.0 - pow(1.0 - MixAmount, Power);
+	if (Type == 1)  
+			MixAmount = (MixAmount + 1.0)/2.0;
+			
+			
+			Out = mix(Away, Face, MixAmount);
+			
+	Flip<1?Out = Out : Out = pow(mix(1-Out,hardness,softness),1/0.1);
+	
+
+}

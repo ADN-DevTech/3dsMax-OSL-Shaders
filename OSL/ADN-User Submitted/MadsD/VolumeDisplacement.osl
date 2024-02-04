@@ -1,0 +1,27 @@
+// VolumeDisplacement.osl
+// Late October 2020 by Mads Drøschler
+//
+// The purspose of the shader is to lift OSL 3D noise into the right space, 
+// so propper volume displacement can be implemented.
+//
+// License: Public Domain
+
+
+
+shader VolumeDisplace 
+[[ string help  = "Move the OSL 3D noise into Arnold displacement slot on the Volume material and scatter the edges<br/>Useful for clouds etc.",
+   string label = "VolumeDisplacement" ]]
+(
+	vector In = 0,
+	float scatter = 86[[int connectable = 0,]],
+	output vector scatter_color = 0,
+	output vector Displacement = 0,
+)
+{
+	
+	scatter_color = -1+In*2;
+	Displacement = scatter*(-1+In*2);
+	
+	
+
+}
